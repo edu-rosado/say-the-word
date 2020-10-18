@@ -1,0 +1,26 @@
+// Partials
+@import "config";
+@import "login";
+@import "dashboard";
+
+// General classes
+#root {
+  min-height: 100vh;
+  background: center
+    url("https://cutewallpaper.org/21/cool-blue-wallpapers/The-Cool-Blue-HD-Wallpapers-BACKGROUNDS-Pinterest-Blue-.jpg");
+  background-size: cover;
+}
+
+.App {
+  min-height: 100vh;
+}
+
+.m-ghost-card {
+  background-color: $ghost-card-color;
+  border-radius: 5px;
+  padding: 1.5rem;
+  margin: 1rem 5vw;
+}
+
+// Bootstrap
+@import "node_modules/bootstrap/scss/bootstrap";
