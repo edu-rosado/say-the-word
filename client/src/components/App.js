@@ -3,8 +3,12 @@ import Landing from './landing/Landing'
 import Dashboard from './dashboard/Dashboard'
 import {BrowserRouter as Router, Switch, Route} from 'react-router-dom'
 
+import {Provider as ReduxProvider} from 'react-redux'
+import store from '../store'
+
 function App() {
   return (
+    <ReduxProvider store={store}>
     <Router>
       <div className="App">
         <Switch>
@@ -13,6 +17,7 @@ function App() {
         </Switch>
       </div>
     </Router>
+    </ReduxProvider>
   );
 }
 

@@ -22,5 +22,10 @@
   margin: 1rem 5vw;
 }
 
+.text-danger {
+  background-color: rgb(255, 210, 210);
+  padding: 0.3rem;
+}
+
 // Bootstrap
 @import "node_modules/bootstrap/scss/bootstrap";

@@ -18,7 +18,15 @@ const validateLogin = data =>{
     return userLoginSchema.validate(data)
 }
 
+const guestUserLoginSchema = Joi.object({
+    username: Joi.string().min(6).max(255).required(),
+})
+const validateLoginGuest = data =>{
+    return guestUserLoginSchema.validate(data)
+}
+
 module.exports = {
     validateRegister,
-    validateLogin
+    validateLogin,
+    validateLoginGuest,
 }

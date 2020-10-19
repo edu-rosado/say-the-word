@@ -1,9 +1,7 @@
 const jwt = require("jsonwebtoken")
 
-const jwtSignToHeader = (id, response)=>{
-    const token = jwt.sign({
-        _id: id
-    }, process.env.JWT_SECRET)
+const jwtSignToHeader = (data, response)=>{
+    const token = jwt.sign(data, process.env.JWT_SECRET)
     response.setHeader("Authorization", `Bearer ${token}`)
 }
 
