@@ -5,7 +5,7 @@ export default function GamePreview({name, participants}) {
         (myString, participant) => myString + `${participant}, `, ""
     ).slice(0, -2)
     return (
-        <div className="game-preview">
+        <div className="sidebar-item-preview">
             <h3>{name}</h3>
             <p className="text-muted">{participantString}</p>
         </div>

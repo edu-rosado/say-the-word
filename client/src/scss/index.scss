@@ -1,5 +1,10 @@
-// Partials
+// variables partial
 @import "config";
+
+// Bootstrap
+@import "node_modules/bootstrap/scss/bootstrap";
+
+// Partials
 @import "landing";
 @import "dashboard";
 
@@ -26,6 +31,3 @@
   background-color: rgb(255, 210, 210);
   padding: 0.3rem;
 }
-
-// Bootstrap
-@import "node_modules/bootstrap/scss/bootstrap";

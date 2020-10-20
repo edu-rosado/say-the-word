@@ -1,5 +1,5 @@
 import React, { useState } from 'react'
-import {Tab, Nav, Button, Modal} from 'react-bootstrap'
+import {Tab, Nav} from 'react-bootstrap'
 import GamesPane from './GamesPane'
 import ContactsPane from './ContactsPane'
 import {useDispatch, useSelector} from 'react-redux'
@@ -12,7 +12,7 @@ const CONTACTS_KEY = "CONTACTS"
 
 export default function Sidebar() {
 
-    const [activeKey, setActiveKey] = useState(GAMES_KEY)
+    const [activeKey, setActiveKey] = useState(CONTACTS_KEY)
     const username = useSelector(state => state.user.username)
     const socket = useSelector(state => state.socket)
     const dispatch = useDispatch()
@@ -54,9 +54,11 @@ export default function Sidebar() {
                     <Tab.Pane eventKey={GAMES_KEY}>
                         <GamesPane/>
                     </Tab.Pane>
+
                     <Tab.Pane eventKey={CONTACTS_KEY}>
                         <ContactsPane/>
                     </Tab.Pane>
+
                 </Tab.Content>
             </Tab.Container>
         </div>

@@ -26,7 +26,6 @@ function App() {
     }
     return ()=>{
       if (socket) {socket.close()}
-      console.log(111)
     }
   },[])
   return (
