@@ -23,7 +23,9 @@
       font-size: 1.3rem;
       padding: 0 0.3rem;
       border-radius: 5px;
+      cursor: pointer;
       &.active {
+        font-weight: bold;
         color: map-get($theme-colors, "primary");
         border: 1px solid map-get($theme-colors, "primary");
       }

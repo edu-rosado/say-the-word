@@ -1,19 +1,30 @@
 import React from 'react';
 import Landing from './landing/Landing'
-import Dashboard from './dashboard/Dashboard'
-import {BrowserRouter as Router, Switch, Route} from 'react-router-dom'
+import ChatDashboard from './chat/Dashboard'
+import {BrowserRouter as Router, Switch} from 'react-router-dom'
+import PrivateRoute from './PrivateRoute'
+import RestrictedRoute from './RestrictedRoute';
 
 import {Provider as ReduxProvider} from 'react-redux'
 import store from '../store'
+import { useEffect } from 'react';
+import { rehydrateUser } from '../actions/userActions';
+
+export const LOCAL_STORAGE_KEY = "say-the-name-user"
 
 function App() {
+  useEffect(()=>{
+    const jsonData = localStorage.getItem(LOCAL_STORAGE_KEY)
+    if (jsonData !== null){ 
+      store.dispatch(rehydrateUser(JSON.parse(jsonData)))}
+  },[])
   return (
     <ReduxProvider store={store}>
     <Router>
       <div className="App">
         <Switch>
-        <Route path="/" component={Landing} />
-        <Route path="/" component={Dashboard} />
+          <PrivateRoute path="/chat" component={ChatDashboard} />
+          <RestrictedRoute path="/" component={Landing} />
         </Switch>
       </div>
     </Router>

@@ -1,14 +1,15 @@
 import React, {useState} from 'react'
 import {Form, Button} from 'react-bootstrap'
 import { useDispatch } from 'react-redux'
+import { useHistory } from 'react-router-dom'
 import {loginGuestUser} from '../../actions/userActions'
 
 export default function GuestForm() {
     const [guestUsername,setGuestUsername] = useState("Pelícano salvaje")
     const [affectedField,setAffectedField] = useState("")
     const [errorMsg,setErrorMsg] = useState("")
-
     const dispatch = useDispatch()
+    const history = useHistory();
 
     const handleSubmit = async (e) =>{
         e.preventDefault()
@@ -19,9 +20,7 @@ export default function GuestForm() {
             setAffectedField(errorObj.affectedField)
             setErrorMsg(errorObj.errorMsg)
         } else{
-            setAffectedField("")
-            setErrorMsg("")
-            setGuestUsername("")
+            history.push("/chat")
         }
     }
 
@@ -36,7 +35,7 @@ export default function GuestForm() {
                     (<span className="text-danger"> {errorMsg} </span>)
                 : ""}                
             </Form.Group>
-            <Button className="w-100" onClick={handleSubmit}>Access as a guest</Button>
+            <Button onClick={handleSubmit}>Access as a guest</Button>
         </Form>
         <p className="px-2 mt-1" style={{fontSize: "1rem"}}>You won't be able to save contacts or games</p> 
         </>

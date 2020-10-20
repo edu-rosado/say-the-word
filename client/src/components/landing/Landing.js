@@ -15,13 +15,13 @@ export default function Landing() {
     <div className="m-ghost-card">
         
         <div className="switch-container">
-            <span className={displayLogin? "login-label mr-2": "login-label mr-2 active"}>Register</span>
+            <span className={displayLogin? "login-label mr-2": "login-label mr-2 active"}  onClick={()=>setDisplayLogin(false)}>Register</span>
             <div className="custom-control custom-switch">
                 <input type="checkbox" className="custom-control-input input-lg" id="login-switch" checked={displayLogin} onChange={()=>setDisplayLogin(!displayLogin)} />
                 <label className="custom-control-label" htmlFor="login-switch">        
                 </label>
             </div>
-            <span className={displayLogin? "login-label mr-2 active": "login-label mr-2"}>Login</span>
+            <span className={displayLogin? "login-label mr-2 active": "login-label mr-2"}  onClick={()=>setDisplayLogin(true)}>Login</span>
         </div>
         {displayLogin? <LoginForm/> : <RegisterForm/>}
     </div>

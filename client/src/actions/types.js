@@ -1,3 +1,5 @@
 export const REGISTER = "REGISTER"
 export const LOGIN = "LOGIN"
 export const GUEST_LOGIN = "GUEST_LOGIN"
+export const REHYDRATE_USER = "REHYDRATE_USER"
+export const LOGOUT_USER = "LOGOUT_USER"

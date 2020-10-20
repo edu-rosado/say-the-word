@@ -13,7 +13,7 @@ const verifyToken = (req, res, next) =>{
     
     const authHeaderList = authHeader.split(" ")
     if (authHeaderList.length < 2){
-        return res.status(403).send("Invalid token")
+        return res.status(403).send("Invalid token format") // Format is "Bearer <token>"
     }
 
     try{

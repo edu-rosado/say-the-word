@@ -24,10 +24,7 @@ export default function LoginForm() {
             setAffectedField(errorObj.affectedField)
             setErrorMsg(errorObj.errorMsg)
         } else{
-            setAffectedField("")
-            setErrorMsg("")
-            setEmail("")
-            setPassword("")
+            // redirect
         }
     }    
     return (
@@ -48,7 +45,7 @@ export default function LoginForm() {
                     (<span className="text-danger"> {errorMsg} </span>)
                 : ""}
             </Form.Group>
-            <Link to="/"><Button onClick={handleSubmit} className="w-100">Login</Button></Link>
+            <Link to="/chat"><Button onClick={handleSubmit} className="w-100">Login</Button></Link>
         </Form>
         </>
     )

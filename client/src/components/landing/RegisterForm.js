@@ -31,12 +31,7 @@ export default function RegisterForm() {
             setAffectedField(errorObj.affectedField)
             setErrorMsg(errorObj.errorMsg)
         } else{
-            setAffectedField("")
-            setErrorMsg("")
-            setUsername("")
-            setEmail("")
-            setPassword("")
-            setPassword2("")
+            // redirect
         }
     }
 
@@ -72,7 +67,7 @@ export default function RegisterForm() {
                     (<span className="text-danger"> {errorMsg} </span>)
                 : ""}                  
             </Form.Group>            
-            <Link to="/"><Button onClick={handleSubmit} className="w-100">Register</Button></Link>
+            <Link to="/chat"><Button onClick={handleSubmit} className="w-100">Register</Button></Link>
         </Form>
         </>
     )

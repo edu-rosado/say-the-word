@@ -47,6 +47,7 @@ router.post("/register", async (req,res) =>{
         username: req.body.username,
         email: req.body.email,
         password:  await bcrypt.hash(req.body.password, salt),
+        isGuest: false,
     })
      try{
          await user.save()
@@ -54,9 +55,9 @@ router.post("/register", async (req,res) =>{
             username: user.username,
             email: user.email
          }, res)
-        res.status(200).send()
+        return res.status(200).send()
      } catch{
-         res.status(400).send("Data good but DB couldn't save")
+         return res.status(400).send("Data good but DB couldn't save")
      }
 });
 
@@ -102,7 +103,7 @@ router.post("/login", async (req,res) =>{
         username: user.username,
         email: user.email        
     }, res)
-    res.status(200).send() 
+    return res.status(200).send() 
 });
 
 router.post("/login-guest", async (req,res) =>{
@@ -124,12 +125,23 @@ router.post("/login-guest", async (req,res) =>{
             errorMsg: `The name '${req.body.username}' is already taken`
         })
     }
-    
-    jwtSignToHeader({
-        username: req.body.username,      
-    }, res)
-    res.status(200).send()
-    
+
+    const user = new User({
+        username: req.body.username,
+        email: null,
+        password:  null,
+        isGuest: true
+    })
+     try{
+         await user.save()
+         jwtSignToHeader({
+            username: req.body.username, 
+            email: null   
+         }, res)
+        return res.status(200).send()
+     } catch{
+         return res.status(400).send("Data good but DB couldn't save")
+     }
 });
 
 module.exports = router;

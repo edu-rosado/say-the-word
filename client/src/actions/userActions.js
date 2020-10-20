@@ -1,4 +1,4 @@
-import {GUEST_LOGIN, LOGIN, REGISTER} from './types'
+import {GUEST_LOGIN, LOGIN, LOGOUT_USER, REGISTER, REHYDRATE_USER} from './types'
 import axios from 'axios'
 import {getTokenPayload} from './aux'
 
@@ -46,3 +46,12 @@ export const loginGuestUser = (formData) => async dispatch =>{
             return null;
         }).catch(e => {return e.response.data})
 }
+
+export const rehydrateUser = (user) => ({
+    type: REHYDRATE_USER,
+    payload: user,
+})
+export const logoutUser = () => ({
+    type: LOGOUT_USER,
+    payload: null,
+})

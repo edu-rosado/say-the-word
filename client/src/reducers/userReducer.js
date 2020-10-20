@@ -1,4 +1,4 @@
-import {GUEST_LOGIN, LOGIN, REGISTER} from '../actions/types'
+import {GUEST_LOGIN, LOGIN, LOGOUT_USER, REGISTER, REHYDRATE_USER} from '../actions/types'
 
 const initialState = {
     username: null,
@@ -26,6 +26,10 @@ export default (state = initialState, action) =>{
                 email: null,
                 isGuest: true,
             }}
+        case REHYDRATE_USER:
+            return action.payload
+        case LOGOUT_USER:
+            return initialState;
         default: return state;
     }
 }

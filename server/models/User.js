@@ -9,13 +9,13 @@ const userSchema = new mongoose.Schema({
     },
     email: {
         type: String,
-        required:true,
+        required:false,
         min:6,
         max:255
     },
     password: {
         type: String,
-        required:true,
+        required:false,
         min:6,
         max:1023
     },
@@ -23,6 +23,10 @@ const userSchema = new mongoose.Schema({
         type: Date,
         default: Date.now,
     },
+    isGuest: {
+        type: Boolean,
+        required:true,
+    }
 })
 
 module.exports = mongoose.model("User", userSchema)
