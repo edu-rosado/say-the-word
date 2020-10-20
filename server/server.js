@@ -30,16 +30,15 @@ const User = require("./models/User")
 const io = require("socket.io")(5001)
 io.on("connection", socket =>{
     const {username, isGuest} = socket.handshake.query
-    console.log(username, isGuest, isGuest === true)
     socket.join(username)
-
-    socket.on("disconnect", ()=>{
-        if (isGuest === "true"){
-            User.deleteOne({username: username}, function (err) {
-                if(err) console.log(err);
-                console.log("Successful deletion");
-              });
+    socket.on("disconnect", (reason)=>{
+        if (
+            (isGuest === "true") && 
+            (reason === "client namespace disconnect")
+        ){
+            // so only if a guest user logged out manually
+            User.deleteOne({username: username}, 
+                function (err) {if(err) console.log(err);});
         }
-        console.log(username + " disconnected")
     })
 })

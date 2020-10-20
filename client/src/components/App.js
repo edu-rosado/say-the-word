@@ -21,9 +21,6 @@ function App() {
     console.log("load done")
     const user = JSON.parse(jsonData)
       store.dispatch(rehydrateUser(user))
-      if (user.isGuest){
-        loginGuestUser(user)
-      }
       socket = connectToSocket(5001, user.username)
       store.dispatch(socket)
     }
