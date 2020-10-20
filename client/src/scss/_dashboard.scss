@@ -76,6 +76,7 @@
 
     .tab-content {
       flex-grow: 1;
+      overflow-y: auto;
       .tab-pane {
         height: 100%;
         .tab-pane-content {
@@ -83,10 +84,6 @@
           display: flex;
           flex-direction: column;
           border: 5px solid theme-color("primary");
-          .inter-nav-space {
-            height: 0.5rem;
-            background-color: theme-color("primary");
-          }
 
           // Preview tanto de partidas como de contactos
           .sidebar-item-preview {
@@ -110,9 +107,12 @@
 
           // Contacts pane
           &.contacts {
-            margin-bottom: 0.3rem;
+            .nav {
+              margin: 0.2rem 0.2rem 0 0.2rem;
+              border-bottom: 2px solid theme-color("primary");
+            }
             .nav-link {
-              padding: 0 0.5rem 0.5rem 0.5rem;
+              padding: 0.3rem;
               &.active {
                 background-color: theme-color("primary");
               }
