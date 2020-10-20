@@ -3,7 +3,7 @@ import {Tab, Nav, Button, Modal} from 'react-bootstrap'
 import GamesPane from './GamesPane'
 import ContactsPane from './ContactsPane'
 import {useDispatch, useSelector} from 'react-redux'
-import { logoutUser } from '../../../actions/userActions'
+import { disconnectFromSocket, logoutUser } from '../../../actions/userActions'
 import { LOCAL_STORAGE_KEY } from '../../App'
 import { useHistory } from 'react-router-dom'
 
@@ -14,11 +14,13 @@ export default function Sidebar() {
 
     const [activeKey, setActiveKey] = useState(GAMES_KEY)
     const username = useSelector(state => state.user.username)
+    const socket = useSelector(state => state.socket)
     const dispatch = useDispatch()
     const history = useHistory()
 
     const handleLogout = ()=>{
         dispatch(logoutUser())
+        dispatch(disconnectFromSocket(socket))
         localStorage.removeItem(LOCAL_STORAGE_KEY)
         history.push("/")
     }
@@ -28,9 +30,9 @@ export default function Sidebar() {
             <div className="account-section">
                 <h2>{username}</h2>
                 <div className="user-controls">
-                    <img src="https://i.ytimg.com/vi/oHg5SJYRHA0/hqdefault.jpg" alt=""/>
-                    <i class="fas fa-cogs fa-lg"></i>
-                    <i onClick={handleLogout} class="fas fa-door-open fa-lg"></i>
+                    <img src="https://i.ytimg.com/vi/oHg5SJYRHA0/hqdefault.jpg" alt="User profile"  title="Go to user details"/>
+                    <i className="fas fa-cogs fa-lg"  title="Settings"></i>
+                    <i onClick={handleLogout} className="fas fa-door-open fa-lg" title="Logout"></i>
                 </div>
             </div>
             <Tab.Container activeKey={activeKey} onSelect={setActiveKey}>

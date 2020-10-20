@@ -5,26 +5,29 @@ const initialState = {
     email: null,
     token: null,
     isGuest: true,
+    socket: null,
 }
 
 export default (state = initialState, action) =>{
     switch (action.type){
         case REGISTER:
         case LOGIN:{
-            const {username, email, token} = action.payload
+            const {username, email, token, socket} = action.payload
             return {
+                ...state,
                 username,
                 email,
                 token,
                 isGuest: false,
+                socket,
             }}
         case GUEST_LOGIN:{
-            const {username, token} = action.payload
+            const {username, token, socket} = action.payload
             return {
+                ...state,
                 username,
                 token,
-                email: null,
-                isGuest: true,
+                socket,
             }}
         case REHYDRATE_USER:
             return action.payload
