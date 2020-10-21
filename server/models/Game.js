@@ -1,3 +1,4 @@
+const { number } = require("joi")
 const mongoose = require("mongoose")
 
 const gameSchema = new mongoose.Schema({
@@ -8,7 +9,7 @@ const gameSchema = new mongoose.Schema({
         max:63
     },
     participants: {
-        type: String,
+        type: Array,
         required:true,
     },
     hasPassword: {
@@ -21,6 +22,10 @@ const gameSchema = new mongoose.Schema({
         required:false,
         min:1,
         max: 63
+    },
+    maxParticipants: {
+        type: Number,
+        required:true,
     },
 })
 

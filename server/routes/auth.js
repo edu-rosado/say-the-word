@@ -3,7 +3,7 @@ const User = require("../models/User")
 const bcrypt = require("bcryptjs")
 const {validateRegister,validateLogin, validateLoginGuest} = require("../validation")
 const jwt = require("jsonwebtoken")
-const {jwtSignToHeader, verifyToken} = require("../common")
+const {jwtSignToHeader} = require("../common")
 
 router.post("/register", async (req,res) =>{
     // validate fields
@@ -48,6 +48,8 @@ router.post("/register", async (req,res) =>{
         email: req.body.email,
         password:  await bcrypt.hash(req.body.password, salt),
         isGuest: false,
+        isOnline: true,
+        friends: [],
     })
      try{
          await user.save()
@@ -91,6 +93,8 @@ router.post("/login", async (req,res) =>{
             errorMsg: `${req.body.email} is not registered`
         })
     }
+    user.isOnline = true;
+    await user.save;
     // compare pwd with hash
     if( !await bcrypt.compare(password, user.password)){
         return res.status(400).json({
@@ -130,7 +134,9 @@ router.post("/login-guest", async (req,res) =>{
         username: req.body.username,
         email: null,
         password:  null,
-        isGuest: true
+        isGuest: true,
+        isOnline: true,
+        friends: [],
     })
      try{
          await user.save()
@@ -143,5 +149,6 @@ router.post("/login-guest", async (req,res) =>{
          return res.status(400).send("Data good but DB couldn't save")
      }
 });
+
 
 module.exports = router;

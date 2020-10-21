@@ -1,3 +1,4 @@
+const { array } = require("joi")
 const mongoose = require("mongoose")
 
 const userSchema = new mongoose.Schema({
@@ -26,7 +27,19 @@ const userSchema = new mongoose.Schema({
     isGuest: {
         type: Boolean,
         required:true,
-    }
+    },
+    isOnline: {
+        type: Boolean,
+        default: true,
+    },
+    friends: {
+        type: Array,
+        default: []
+    },
+    games: {
+        type: Array,
+        default: []
+    },
 })
 
 module.exports = mongoose.model("User", userSchema)

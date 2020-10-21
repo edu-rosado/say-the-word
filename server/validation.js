@@ -5,6 +5,7 @@ const userRegisterSchema = Joi.object({
     username: Joi.string().min(6).max(255).required(),
     email: Joi.string().min(6).max(255).required().email(),
     password: Joi.string().min(6).max(1023).required(),
+    friends: Joi.array(),
 })
 const validateRegister = data =>{
     return userRegisterSchema.validate(data)
