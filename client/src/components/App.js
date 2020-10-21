@@ -8,7 +8,7 @@ import RestrictedRoute from './RestrictedRoute';
 import {Provider as ReduxProvider} from 'react-redux'
 import store from '../store'
 import { useEffect } from 'react';
-import { connectToSocket, loginGuestUser, rehydrateUser } from '../actions/userActions';
+import { connectToSocket, rehydrateUser } from '../actions/userActions';
 
 export const LOCAL_STORAGE_KEY = "say-the-name-user"
 

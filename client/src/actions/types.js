@@ -3,5 +3,14 @@ export const LOGIN = "LOGIN"
 export const GUEST_LOGIN = "GUEST_LOGIN"
 export const REHYDRATE_USER = "REHYDRATE_USER"
 export const LOGOUT_USER = "LOGOUT_USER"
+
 export const CONNECT_SOCKET = "CONNECT_SOCKET"
 export const DISCONNECT_SOCKET = "DISCONNECT_SOCKET"
+
+export const GET_ONLINE_CONTACTS = "GET_ONLINE_CONTACTS"
+export const GET_FRIENDS = "GET_FRIENDS"
+export const ADD_FRIEND = "ADD_FRIEND"
+export const REMOVE_FRIEND = "REMOVE_FRIEND"
+
+export const START_GAME = "START_GAME"
+export const EXIT_GAME = "EXIT_GAME"

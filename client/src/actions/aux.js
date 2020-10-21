@@ -1,3 +1,4 @@
+import { useSelector } from "react-redux";
 
 export const getTokenPayload = token => {
     if (token) {
@@ -9,4 +10,9 @@ export const getTokenPayload = token => {
     }
   
     return null;
-  };
+};
+
+export const getTokenConfig = (token) => {
+  return { headers: {"Authorization": `Bearer ${token}`}}
+}
+  

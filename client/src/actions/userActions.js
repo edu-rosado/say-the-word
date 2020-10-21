@@ -4,7 +4,7 @@ import {getTokenPayload} from './aux'
 import io from 'socket.io-client'
 
 export const registerUser = (formData) => async dispatch =>{
-    return await axios.post("/api/user/register", formData)
+    return await axios.post("/api/auth/register", formData)
         .then(res => {
             const token = res.headers["authorization"].split(" ")[1]
             dispatch({
@@ -20,23 +20,24 @@ export const registerUser = (formData) => async dispatch =>{
 }
 
 export const loginUser = (formData) => async dispatch =>{   
-    return await axios.post("/api/user/login", formData)
+    return await axios.post("/api/auth/login", formData)
         .then(res => {
             const token = res.headers["authorization"].split(" ")[1]
+            const tokenPayload = getTokenPayload(token)
             dispatch({
                 type: LOGIN,
                 payload: {
                     token: token,
-                    ...getTokenPayload(token),
+                    ...tokenPayload,
                 }
             })
-            dispatch(connectToSocket(5001, formData.username,false))
+            dispatch(connectToSocket(5001, tokenPayload.username,false))
             return null;
         }).catch(e => {return e.response.data})
 }
 
 export const loginGuestUser = (formData) => async dispatch =>{
-    return await axios.post("/api/user/login-guest", formData)
+    return await axios.post("/api/auth/login-guest", formData)
         .then(res => {
             const token = res.headers["authorization"].split(" ")[1]
             dispatch({

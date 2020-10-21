@@ -30,8 +30,6 @@ export default function RegisterForm() {
         if (errorObj){
             setAffectedField(errorObj.affectedField)
             setErrorMsg(errorObj.errorMsg)
-        } else{
-            // redirect
         }
     }
 

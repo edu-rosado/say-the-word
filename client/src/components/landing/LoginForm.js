@@ -23,8 +23,6 @@ export default function LoginForm() {
         if (errorObj){
             setAffectedField(errorObj.affectedField)
             setErrorMsg(errorObj.errorMsg)
-        } else{
-            // redirect
         }
     }    
     return (
