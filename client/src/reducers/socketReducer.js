@@ -5,7 +5,10 @@ export default function (state={}, action){
         case CONNECT_SOCKET:
             return action.payload
         case DISCONNECT_SOCKET:
-        default:
             return {}
+        default:
+            return state
+
+            
     }
 }
