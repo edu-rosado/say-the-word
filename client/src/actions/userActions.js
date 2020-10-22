@@ -50,7 +50,6 @@ export const loginGuestUser = (formData) => async dispatch =>{
             dispatch(connectToSocket(5001, formData.username,true))
             return null;
         }).catch(e => {
-            console.log(e)
             return e.response.data
         })
 }

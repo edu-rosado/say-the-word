@@ -2,39 +2,38 @@ import React from 'react'
 import { useEffect } from 'react';
 import { useState } from 'react';
 import { Button, Form, Modal } from "react-bootstrap";
-import { useSelector } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
+import { createGame } from '../../../actions/gameActions';
+import GameContactSelection from './GameContactSelection';
 
 export default function GamesModal() {
     const[title, setTitle] = useState("")
     const[hasPassword, setHasPassword] = useState(false)
     const[password, setPassword] = useState("")
-    const[invitedFriends, setInvitedFriends] = useState([])
-    const[nParticipants, setNParticipants] = useState(1)
-
-    const isGuest = useSelector(state => state.user.isGuest)
+    const[participants, setParticipants] = useState([])
+    const[maxParticipants, setMaxParticipants] = useState(1)
+    const token = useSelector(state=> state.user.token)
+    const dispatch = useDispatch()
 
     useEffect(()=>{
-        if (nParticipants < 2){ // TODO: change to take on account the num of friends selected
-            setNParticipants(2)
-        } else if (nParticipants > 20){
-            setNParticipants(20)
+        const minValue = Math.max(2, participants.length+1)
+        if (maxParticipants < minValue){ // TODO: change to take on account the num of friends selected
+            setMaxParticipants(minValue)
+        } else if (maxParticipants > 10){
+            setMaxParticipants(10)
         }
-    },[nParticipants])
+    },[maxParticipants, participants])
 
-    function handleSubmit(e){
+    async function handleSubmit(e){
         e.preventDefault()
-        console.log(111)
-    }
-
-    function displayFriendsInput(){
-        if (isGuest){
-            return (
-                <p className="text-muted text-center mb-4">As a guest user, you can't add friends to your account</p>
-            )
+        const error = await dispatch(
+            createGame(token, {
+                title, hasPassword, password, participants, maxParticipants
+            }))
+        if (error){
+            console.log(error)
         } else{
-            return (
-                <p>TODO</p>
-            )
+            // push to the game utl
         }
     }
 
@@ -58,11 +57,11 @@ export default function GamesModal() {
                 </div>
                 <Form.Group controlId="numOfFriends" >
                     <Form.Label>Invite friends</Form.Label>
-                    {displayFriendsInput()}
+                    <GameContactSelection setParticipants={setParticipants}/>
                 </Form.Group>
                 <Form.Group  controlId="maxParticipants" className="number-of-participants">
                     <Form.Label>Maximum number of participants</Form.Label>
-                    <Form.Control type="number" value={nParticipants} onChange={(e)=> setNParticipants(e.target.value)}/>
+                    <Form.Control type="number" value={maxParticipants} onChange={(e)=> setMaxParticipants(e.target.value)}/>
                 </Form.Group>
 
                 <Button type="submit" onSubmit={handleSubmit}>Create game</Button>

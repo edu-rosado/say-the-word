@@ -4,10 +4,6 @@
 // Bootstrap
 @import "node_modules/bootstrap/scss/bootstrap";
 
-// Partials
-@import "landing";
-@import "dashboard";
-
 // General classes
 #root {
   min-height: 100vh;
@@ -31,3 +27,75 @@
   background-color: rgb(255, 210, 210);
   padding: 0.3rem;
 }
+
+.nav {
+  display: flex;
+
+  .nav-item {
+    flex-grow: 1;
+    .nav-link {
+      text-align: center;
+      border-radius: 0;
+    }
+  }
+}
+
+// Preview tanto de partidas como de contactos
+.sidebar-item-preview {
+  //   text-align: center;
+  background-color: $ghost-card-color;
+  padding: 0.5rem;
+  border-bottom: 2px solid rgba(0, 0, 0, 0.37);
+  cursor: pointer;
+  &:hover {
+    background-color: rgba(184, 240, 250, 0.644);
+    border: 1px solid rgb(5, 255, 242);
+    transform: scaleY(0.98);
+  }
+  &.active {
+    border: 1px solid rgb(5, 255, 242);
+    background-color: rgba(140, 238, 255, 0.644);
+  }
+
+  h3 {
+    font-size: 1rem;
+    pointer-events: none;
+  }
+  p {
+    margin-bottom: 0;
+    pointer-events: none;
+  }
+}
+
+// comportamiento estandar del contenido de tabs
+.tab-content {
+  flex-grow: 1;
+  overflow-y: auto;
+  .tab-pane {
+    height: 100%;
+    .tab-pane-content {
+      height: 100%;
+      display: flex;
+      flex-direction: column;
+      border: 5px solid theme-color("primary");
+    }
+  }
+}
+
+// acciones de la parte inferior de la sidebar
+.side-action-container {
+  display: flex;
+  flex-direction: column;
+  background-color: rgba(93, 192, 159, 0.493);
+  button {
+    border-radius: 0;
+    margin: 0.3rem;
+    padding: 1rem 0;
+  }
+}
+
+// Partials
+@import "landing";
+@import "dashboard";
+@import "sidebar_contacts";
+@import "sidebar_games";

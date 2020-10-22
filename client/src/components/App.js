@@ -16,9 +16,7 @@ function App() {
   useEffect(()=>{
     const jsonData = localStorage.getItem(LOCAL_STORAGE_KEY)
     let socket = null;
-    console.log("load effect "+ jsonData)
     if (jsonData !== null){ 
-    console.log("load done")
     const user = JSON.parse(jsonData)
       store.dispatch(rehydrateUser(user))
       socket = connectToSocket(5001, user.username)

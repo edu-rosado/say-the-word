@@ -4,16 +4,19 @@ import GamePreview from './GamePreview'
 import GamesModal from './GamesModal'
 
 export default function GamesPane() {
-    const [modalIsOpen, setModalIsOpen] = useState(false)
+    const [modalIsOpen, setModalIsOpen] = useState(true)
     return (
         <div className="tab-pane-content games">
             <div className="game-list">
-            <GamePreview name="my game" participants={["mika", "Jagger", "joe"]}/>
-                        <GamePreview name="my game 2" participants={["Durint", "Hurin", "Fëanor"]}/>
+                <GamePreview name="my game" participants={["mika", "Jagger", "joe"]}/>
+                <GamePreview name="my game 2" participants={["Durint", "Hurin", "Fëanor"]}/>
             </div>
             <div className="side-action-container">
             <Button onClick={()=>setModalIsOpen(true)} className="side-action-btn">Create a new game</Button>
-            <Button className="side-action-btn">Join game</Button>
+
+            {/* Future feature */}
+            {/* <Button className="side-action-btn">Join game by id</Button> */}
+
             </div>
 
             <Modal className="game-modal" show={modalIsOpen} onHide={()=>setModalIsOpen(false)}>

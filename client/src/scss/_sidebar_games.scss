@@ -1,0 +1,18 @@
+// Games pane
+.game-list {
+  height: 100%;
+  flex-grow: 1;
+}
+
+.new-game-contacts {
+  box-shadow: 0 0 5px theme-color("primary");
+  input {
+    border: none;
+    width: 100%;
+    padding: 0.3rem 1rem;
+  }
+  .game-participant-container {
+    overflow-y: auto;
+    max-height: 20vh;
+  }
+}

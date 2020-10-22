@@ -12,15 +12,15 @@ const CONTACTS_KEY = "CONTACTS"
 
 export default function Sidebar() {
 
-    const [activeKey, setActiveKey] = useState(CONTACTS_KEY)
+    const [activeKey, setActiveKey] = useState(GAMES_KEY)
     const username = useSelector(state => state.user.username)
     const socket = useSelector(state => state.socket)
     const dispatch = useDispatch()
     const history = useHistory()
 
     const handleLogout = ()=>{
-        dispatch(logoutUser())
         dispatch(disconnectFromSocket(socket))
+        dispatch(logoutUser())
         localStorage.removeItem(LOCAL_STORAGE_KEY)
         history.push("/")
     }
