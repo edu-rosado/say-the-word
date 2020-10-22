@@ -25,7 +25,17 @@ const verifyToken = (req, res, next) =>{
     }
 }
 
+const handleValidationErrors = (response, validationRes)=>{
+    if (validationRes.error) {
+        const errorMsg = validationRes.error.details[0].message
+        return response.status(400).json({errorMsg})
+    }
+    return null
+}
+
+
 module.exports = {
     jwtSignToHeader,
     verifyToken,
+    handleValidationErrors,
 }
