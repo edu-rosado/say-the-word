@@ -1,14 +1,17 @@
 import React, { useEffect, useState } from 'react'
-import { Nav, Tab } from 'react-bootstrap'
+import { Button, Modal, Nav, Tab } from 'react-bootstrap'
 import { useDispatch, useSelector } from 'react-redux'
 import { getOnlineContacts, getFriends } from '../../../actions/ContactsFriendsActions'
 import ContactPreview from './ContactPreview'
+import FriendModal from "./modals/FriendModal"
 
 const FRIENDS_KEY = "FRIENDS_KEY"
 const ONLINE_KEY = "ONLINE_KEY"
 
 export default function ContactsPane() {
     const [activeKey, setActiveKey] = useState(ONLINE_KEY)
+    const [modalIsOpen, setModalIsOpen] = useState(true)
+
     const onlineContacts = useSelector(state => state.contacts.online)
     const friends = useSelector(state => state.friends)
     const {token, username} = useSelector(state => state.user)
@@ -21,6 +24,8 @@ export default function ContactsPane() {
             dispatch(getFriends(token))
         }
     },[activeKey])
+
+
     
     return (
         <div className="tab-pane-content contacts">
@@ -55,6 +60,17 @@ export default function ContactsPane() {
                     </Tab.Pane>
                 </Tab.Content>
             </Tab.Container>
+
+            <div className="side-action-container">
+                <Button
+                    onClick={()=>setModalIsOpen(true)} 
+                    className="side-action-btn"
+                >Add a new friend</Button>
+            </div>
+
+            <Modal className="friend-modal" show={modalIsOpen} onHide={()=>setModalIsOpen(false)}>
+                <FriendModal setModalIsOpen={setModalIsOpen}/>
+            </Modal>
         </div>
     )
 }

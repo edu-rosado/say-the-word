@@ -1,6 +1,6 @@
 import axios from 'axios'
 import { getTokenConfig } from './aux'
-import { GET_FRIENDS, GET_ONLINE_CONTACTS } from './types'
+import { ADD_FRIEND, GET_FRIENDS, GET_ONLINE_CONTACTS } from './types'
 
 export const getOnlineContacts = (token) => async dispatch =>{
     const config = getTokenConfig(token)
@@ -21,5 +21,24 @@ export const getFriends = (token) => async dispatch =>{
                 type: GET_FRIENDS,
                 payload: res.data
             })
+            console.log(1111)
+        }).catch((error)=>{
+            console.log(222)
+            console.log(error)
+        })
+}
+
+export const addFriend = (token, selectedValue, field) => async dispatch =>{
+    const config = getTokenConfig(token)
+    const body = {selectedValue, field}
+    return await axios.post("/api/friends", body, config)
+        .then(res => {
+            dispatch({
+                type: ADD_FRIEND,
+                payload: res.data.username
+            })
+            return null
+        }).catch((error)=>{
+            return error
         })
 }

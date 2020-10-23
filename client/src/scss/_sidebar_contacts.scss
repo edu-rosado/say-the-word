@@ -11,3 +11,31 @@
     }
   }
 }
+
+// Add friend modal
+.form-group {
+  #user-key {
+    flex-grow: 10;
+  }
+  .input-group-prepend {
+    flex-grow: 1;
+    button {
+      background-color: rgb(217, 251, 255);
+      color: black;
+      border-radius: 0;
+    }
+  }
+  .username-suggestion-list {
+    box-shadow: 0 0 3px theme-color("primary");
+    &.deactivated {
+      display: none;
+    }
+    p {
+      padding: 0.5rem 1rem;
+      text-align: center;
+    }
+    h3 {
+      pointer-events: none;
+    }
+  }
+}

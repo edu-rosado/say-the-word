@@ -1,10 +1,10 @@
 import React, { useState } from 'react'
 import { Button, Modal } from 'react-bootstrap'
 import GamePreview from './GamePreview'
-import GamesModal from './GamesModal'
+import GameModal from './modals/GameModal'
 
 export default function GamesPane() {
-    const [modalIsOpen, setModalIsOpen] = useState(true)
+    const [modalIsOpen, setModalIsOpen] = useState(false)
     return (
         <div className="tab-pane-content games">
             <div className="game-list">
@@ -20,7 +20,7 @@ export default function GamesPane() {
             </div>
 
             <Modal className="game-modal" show={modalIsOpen} onHide={()=>setModalIsOpen(false)}>
-                <GamesModal/>
+                <GameModal/>
             </Modal>
                         
         </div>

@@ -3,8 +3,8 @@ import { useEffect } from 'react';
 import { useState } from 'react';
 import { Button, Form, Modal } from "react-bootstrap";
 import { useDispatch, useSelector } from 'react-redux';
-import { createGame } from '../../../actions/gameActions';
-import GameContactSelection from './GameContactSelection';
+import { createGame } from '../../../../actions/gameActions';
+import GameContactSelection from './GameParticipantSelection';
 
 export default function GamesModal() {
     const[title, setTitle] = useState("")
