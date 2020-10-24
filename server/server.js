@@ -84,19 +84,47 @@ function setUpSocket(){
     const io = require("socket.io")(5001)
     io.on("connection", async socket =>{
         const {username, isGuest} = socket.handshake.query
+        console.log(socket.handshake.query)
+        let user = await User.findOne({username})
+        console.log("server user ",user)
+        if (user === null) {
+            console.log("server refuses")
+            socket.disconnect(true)
+            return;
+        } // refuse connectio
         socket.join(username)
-        const myUsers = await User.find({})
-        const user = await User.findOne({username})
         user.isOnline = true;
+        console.log("user socket good from server")
+
+        // const tmp = await User.find({})
+        // console.log(tmp.map(user => ({
+        //     username: user.username,
+        //     isGuest: user.isGuest, 
+        //     isOnline: user.isOnline,
+        // })))
+        
         await user.save()
         socket.on("disconnect", async (reason)=>{
-            user.isOnline = false;
-            await user.save()
-            if (
-                (reason === "client namespace disconnect") && (isGuest === "true")){
-                // so only if a guest user logged out manually
-                await User.deleteOne({username}, 
-                    function (err) {if(err) console.log(err);});
+            console.log(reason)
+            if (!isGuest){
+                user.isOnline = false;
+                await user.save()
+            }else if (reason === "client namespace disconnect"){
+                // so only if a guest user logged out manually we remove it
+                user = await User.findOne({username}) // get latest user info
+                const gamesAffected = await Game.find({
+                    _id: {$in: user.games}
+                })
+                // Perform manual cascade reference removal and finally user removal
+                gamesAffected.forEach(async game =>{
+                    game.participants.remove(username)
+                    if (game.participants.length == 0){
+                        await game.remove()
+                    } else{
+                        await game.save()
+                    }
+                })
+                await user.remove()
             }
         })
     })

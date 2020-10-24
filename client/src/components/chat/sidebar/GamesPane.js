@@ -1,15 +1,26 @@
 import React, { useState } from 'react'
 import { Button, Modal } from 'react-bootstrap'
+import { useSelector } from 'react-redux'
 import GamePreview from './GamePreview'
 import GameModal from './modals/GameModal'
 
-export default function GamesPane() {
+export default function GamesPane({setDoLogout}) {
+    
+    const games = useSelector(state => state.games)
+    
     const [modalIsOpen, setModalIsOpen] = useState(false)
     return (
         <div className="tab-pane-content games">
             <div className="game-list">
-                <GamePreview name="my game" participants={["mika", "Jagger", "joe"]}/>
-                <GamePreview name="my game 2" participants={["Durint", "Hurin", "Fëanor"]}/>
+                {games.map(game => (
+                    <GamePreview
+                    key={game._id}
+                    name={game.title}
+                    participants={game.participants}
+                    hasPassword={game.hasPassword}
+                    maxParticipants={game.maxParticipants}
+                    />
+                ))}
             </div>
             <div className="side-action-container">
             <Button 

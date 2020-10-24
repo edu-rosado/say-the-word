@@ -12,5 +12,6 @@ export const GET_FRIENDS = "GET_FRIENDS"
 export const ADD_FRIEND = "ADD_FRIEND"
 export const REMOVE_FRIEND = "REMOVE_FRIEND"
 
+export const GET_GAMES = "GET_GAMES"
 export const CREATE_GAME = "START_GAME"
 export const EXIT_GAME = "EXIT_GAME"

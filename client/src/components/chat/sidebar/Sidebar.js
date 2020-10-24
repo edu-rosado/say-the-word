@@ -6,22 +6,24 @@ import {useDispatch, useSelector} from 'react-redux'
 import { disconnectFromSocket, logoutUser } from '../../../actions/userActions'
 import { LOCAL_STORAGE_KEY } from '../../App'
 import { useHistory } from 'react-router-dom'
+import { useEffect } from 'react'
 
 const GAMES_KEY = "GAMES"
 const CONTACTS_KEY = "CONTACTS"
 
 export default function Sidebar() {
 
-    const [activeKey, setActiveKey] = useState(CONTACTS_KEY)
-    const username = useSelector(state => state.user.username)
+    const [activeKey, setActiveKey] = useState(GAMES_KEY)
+    
+    const {username} = useSelector(state => state.user)
     const socket = useSelector(state => state.socket)
     const dispatch = useDispatch()
     const history = useHistory()
 
     const handleLogout = ()=>{
-        dispatch(disconnectFromSocket(socket))
-        dispatch(logoutUser())
         localStorage.removeItem(LOCAL_STORAGE_KEY)
+        // dispatch(disconnectFromSocket(socket))
+        // dispatch(logoutUser())
         history.push("/")
     }
 
@@ -46,7 +48,7 @@ export default function Sidebar() {
                     <Nav.Item>
                         <Nav.Link 
                             eventKey={CONTACTS_KEY}
-                        >Contacts
+                            >Contacts
                         </Nav.Link>
                     </Nav.Item>
                 </Nav>

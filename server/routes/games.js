@@ -52,7 +52,13 @@ router.post("/", verifyToken, async (req,res)=>{
     const user = await User.findOne({username: req.user.username})
     user.games.push(game._id)
     await user.save()
-    return res.status(200).json({id: game._id})  
+    return res.status(200).json({
+        _id: game._id,
+        title: game.title, 
+        hasPassword: game.hasPassword, 
+        maxParticipants: game.maxParticipants,
+        participants: game.participants,        
+    })  
 })
 
 // Get all games
@@ -64,7 +70,7 @@ router.get("/", verifyToken, async (req,res)=>{
             title: game.title, 
             hasPassword: game.hasPassword, 
             maxParticipants: game.maxParticipants,
-            currentParticipants: game.participants.length,
+            participants: game.participants,
         }
     )))
 })

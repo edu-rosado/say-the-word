@@ -21,10 +21,8 @@ export const getFriends = (token) => async dispatch =>{
                 type: GET_FRIENDS,
                 payload: res.data
             })
-            console.log(1111)
         }).catch((error)=>{
-            console.log(222)
-            console.log(error)
+            return error
         })
 }
 

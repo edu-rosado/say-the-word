@@ -10,17 +10,21 @@ router.post("/", verifyToken, async (req,res)=>{
     const query = {}
     query[field] = req.body.selectedValue
     const potentialFriend = await User.findOne(query)
-    if (potentialFriend){
-        const selfUser = await User.findOne({username: req.user.username})
-        if (selfUser.friends.find(name => name == potentialFriend.username) !== undefined){
-            return res.status(400).send("User is already a friend")
-        } else{
-            selfUser.friends.push(potentialFriend.username)
-            selfUser.save()
-            return res.status(200).json({username: potentialFriend.username})
-        }
+    if (!potentialFriend){
+        return res.status(404).send("User with the provided credentials does not exist")
+    } else if (potentialFriend.isGuest){
+        return res.status(404).send("You cannot add a guest user as a friend, full account is needed")
     }
-    return res.status(404).send("User with the provided credentials does not exist")
+    const selfUser = await User.findOne({username: req.user.username})
+    if (selfUser.friends.find(name => name == potentialFriend.username) !== undefined){
+        return res.status(400).send("User is already a friend")
+    } else{
+        selfUser.friends.push(potentialFriend.username)
+        selfUser.save()
+        return res.status(200).json({username: potentialFriend.username})
+    }
+
+    
 })
 
 router.get("/", verifyToken, async (req,res)=>{

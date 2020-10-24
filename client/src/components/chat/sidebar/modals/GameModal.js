@@ -12,6 +12,9 @@ export default function GamesModal() {
     const[password, setPassword] = useState("")
     const[participants, setParticipants] = useState([])
     const[maxParticipants, setMaxParticipants] = useState(1)
+    const [affectedField, setAffectedField] = useState("")
+    const [errorMsg, setErrorMsg] = useState("")
+    
     const token = useSelector(state=> state.user.token)
     const dispatch = useDispatch()
 
@@ -30,8 +33,16 @@ export default function GamesModal() {
             createGame(token, {
                 title, hasPassword, password, participants, maxParticipants
             }))
+            
         if (error){
-            console.log(error)
+            console.log(typeof error, error)
+            setErrorMsg(error)
+            if (error.indexOf("title") >= 0) {
+                setAffectedField("title")
+            }
+            else {
+                setAffectedField("password")
+            }
         } else{
             // push to the game utl
         }
@@ -45,6 +56,9 @@ export default function GamesModal() {
                 <Form.Group controlId="title">
                     <Form.Label>Game title</Form.Label>
                     <Form.Control type="text" required value={title} onChange={(e)=> setTitle(e.target.value)}/>
+                    {affectedField === "title" ?
+                        (<span className="text-danger"> {errorMsg} </span>)
+                    : ""}                    
                 </Form.Group>
                 <Form.Label>Protect access with password</Form.Label>
                 <div className="password-input-container">
@@ -53,6 +67,9 @@ export default function GamesModal() {
                     </Form.Group>
                     <Form.Group controlId="password" className={hasPassword ? "password active" : "password"}>
                         <Form.Control type="password" checked={password} onChange={(e)=> setPassword(e.target.value)} placeholder="Type your password"/>
+                        {affectedField === "password" ?
+                            (<span className="text-danger"> {errorMsg} </span>)
+                        : ""}  
                     </Form.Group>
                 </div>
                 <Form.Group controlId="numOfFriends" >
