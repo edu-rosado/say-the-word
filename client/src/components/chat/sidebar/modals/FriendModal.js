@@ -141,6 +141,7 @@ export default function GamesModal({setModalIsOpen}) {
                                 <ContactPreview
                                 key={name}
                                 name={name}
+                                activeClass="single"
                                 />)
                             ))
                             : <p className="text-muted">{noResultText}</p>}

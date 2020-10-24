@@ -12,10 +12,13 @@ export default function GamesPane() {
                 <GamePreview name="my game 2" participants={["Durint", "Hurin", "Fëanor"]}/>
             </div>
             <div className="side-action-container">
-            <Button onClick={()=>setModalIsOpen(true)} className="side-action-btn">Create a new game</Button>
+            <Button 
+                onClick={()=>setModalIsOpen(true)} 
+            >Create a new game</Button>
 
             {/* Future feature */}
-            {/* <Button className="side-action-btn">Join game by id</Button> */}
+            <Button 
+            >Join game by id</Button>
 
             </div>
 

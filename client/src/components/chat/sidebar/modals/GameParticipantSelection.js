@@ -19,7 +19,10 @@ export default function GameContactSelection({setParticipants}) {
             return <p className="text-muted pt-3 px-3 border-top">You still haven't added any friends</p>
         }else{
             return (friends.map(friendName => (
-                <ContactPreview name={friendName}/>
+                <ContactPreview
+                    name={friendName}
+                    activeClass="sticky"
+                />
             )))
         }
     }

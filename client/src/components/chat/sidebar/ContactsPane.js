@@ -10,7 +10,7 @@ const ONLINE_KEY = "ONLINE_KEY"
 
 export default function ContactsPane() {
     const [activeKey, setActiveKey] = useState(ONLINE_KEY)
-    const [modalIsOpen, setModalIsOpen] = useState(true)
+    const [modalIsOpen, setModalIsOpen] = useState(false)
 
     const onlineContacts = useSelector(state => state.contacts.online)
     const friends = useSelector(state => state.friends)
@@ -47,6 +47,7 @@ export default function ContactsPane() {
                             <ContactPreview 
                             key={contact}
                             name={contact}
+                            activeClass="single"
                             />
                         ))}
                     </Tab.Pane>
@@ -55,6 +56,7 @@ export default function ContactsPane() {
                             <ContactPreview 
                             key={friend}
                             name={friend}
+                            activeClass="single"
                             />
                         ))}
                     </Tab.Pane>
@@ -63,8 +65,7 @@ export default function ContactsPane() {
 
             <div className="side-action-container">
                 <Button
-                    onClick={()=>setModalIsOpen(true)} 
-                    className="side-action-btn"
+                    onClick={()=>setModalIsOpen(true)}
                 >Add a new friend</Button>
             </div>
 
