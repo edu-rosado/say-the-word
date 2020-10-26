@@ -62,11 +62,20 @@ async function myFunc(){
         title: "game 1",
         hasPassword: false,
         password: "no_password",
-        participants: ["111111","333333"],
+        participants: ["111111","222222"],
         maxParticipants: 3,
         messages: [],
     })
     await g1.save()
+    const g2 = await new Game({
+        title: "game 2",
+        hasPassword: false,
+        password: "no_password",
+        participants: ["111111","222222"],
+        maxParticipants: 3,
+        messages: [],
+    })
+    await g2.save()
     const u1 = new User({
         username: "111111",
         email: "1@1.com",
@@ -83,34 +92,32 @@ async function myFunc(){
 function setUpSocket(){
     const io = require("socket.io")(5001)
     io.on("connection", async socket =>{
-        const {username, isGuest} = socket.handshake.query
-        console.log(socket.handshake.query)
+        const {username} = socket.handshake.query
         let user = await User.findOne({username})
-        console.log("server user ",user)
         if (user === null) {
-            console.log("server refuses")
-            socket.disconnect(true)
             return;
-        } // refuse connectio
-        socket.join(username)
+        }
         user.isOnline = true;
-        console.log("user socket good from server")
-
-        // const tmp = await User.find({})
-        // console.log(tmp.map(user => ({
-        //     username: user.username,
-        //     isGuest: user.isGuest, 
-        //     isOnline: user.isOnline,
-        // })))
-        
         await user.save()
+
+        socket.on("join", async (roomId)=>{
+            const game = await Game.findOne({_id: roomId})
+            if (game){
+                game.participants.push(username)
+                await game.save()
+                socket.join(username)
+                socket.to(roomId).emit("newParticipant", username)
+                socket.emit("joinAck","All good")
+            } else{
+                socket.emit("joinAck","Requested game does not exist")
+            }
+        })
+
         socket.on("disconnect", async (reason)=>{
-            console.log(reason)
-            if (!isGuest){
+            if (!user.isGuest){
                 user.isOnline = false;
                 await user.save()
             }else if (reason === "client namespace disconnect"){
-                // so only if a guest user logged out manually we remove it
                 user = await User.findOne({username}) // get latest user info
                 const gamesAffected = await Game.find({
                     _id: {$in: user.games}

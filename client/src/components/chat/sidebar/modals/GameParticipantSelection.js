@@ -12,7 +12,7 @@ export default function GameContactSelection({setParticipants}) {
 
     useEffect(()=>{
         dispatch(getFriends(token))
-    },[token,dispatch])
+    },[])
 
     function displayFriends(){
         if (friends.length === 0){

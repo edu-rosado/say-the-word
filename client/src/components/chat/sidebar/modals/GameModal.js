@@ -35,7 +35,6 @@ export default function GamesModal() {
             }))
             
         if (error){
-            console.log(typeof error, error)
             setErrorMsg(error)
             if (error.indexOf("title") >= 0) {
                 setAffectedField("title")

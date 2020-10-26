@@ -3,7 +3,7 @@ const User = require("../models/User")
 const bcrypt = require("bcryptjs")
 const {validateRegister,validateLogin, validateLoginGuest} = require("../validation")
 const jwt = require("jsonwebtoken")
-const {jwtSignToHeader} = require("../common")
+const {jwtSignToHeader, verifyToken} = require("../common")
 
 router.post("/register", async (req,res) =>{
     // validate fields
@@ -149,6 +149,10 @@ router.post("/login-guest", async (req,res) =>{
          return res.status(400).send("Data good but DB couldn't save")
      }
 });
+
+router.get("/verify-token", verifyToken, (req,res) =>{
+    res.sendStatus(200)
+})
 
 
 module.exports = router;

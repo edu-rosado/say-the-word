@@ -31,7 +31,7 @@ export default function GamesModal({setModalIsOpen}) {
     const dispatch = useDispatch()
 
     async function handleSubmit(e){
-        const valueToSend = activeBtn == BY_USERNAME? selectedName : inputValue
+        const valueToSend = activeBtn === BY_USERNAME? selectedName : inputValue
         e.preventDefault()
         const error = await dispatch(addFriend(token, valueToSend, activeBtn))
         if (error){
@@ -63,7 +63,7 @@ export default function GamesModal({setModalIsOpen}) {
     async function fetchSuggestions(text){
         setInputValue(text)
         setErrorMessage("")
-        if (activeBtn == BY_EMAIL) return
+        if (activeBtn === BY_EMAIL) return
         setSubmitIsActive(false)
         if (text.length > 0){
             const config = getTokenConfig(token)

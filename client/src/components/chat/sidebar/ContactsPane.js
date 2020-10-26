@@ -4,11 +4,12 @@ import { useDispatch, useSelector } from 'react-redux'
 import { getOnlineContacts, getFriends } from '../../../actions/ContactsFriendsActions'
 import ContactPreview from './ContactPreview'
 import FriendModal from "./modals/FriendModal"
+import {CONTACTS_KEY} from './Sidebar'
 
 const FRIENDS_KEY = "FRIENDS_KEY"
 const ONLINE_KEY = "ONLINE_KEY"
 
-export default function ContactsPane() {
+export default function ContactsPane({parentActiveKey}) {
     const [activeKey, setActiveKey] = useState(ONLINE_KEY)
     const [modalIsOpen, setModalIsOpen] = useState(false)
 
@@ -18,15 +19,15 @@ export default function ContactsPane() {
     const dispatch = useDispatch()
 
     useEffect(()=>{
-        if (activeKey === ONLINE_KEY){
-            dispatch(getOnlineContacts(token))
-        } else{
-            dispatch(getFriends(token))
+        if (parentActiveKey == CONTACTS_KEY){
+            if (activeKey === ONLINE_KEY){
+                dispatch(getOnlineContacts(token))
+            } else{
+                dispatch(getFriends(token))
+            }
         }
-    },[activeKey])
+    },[parentActiveKey,activeKey])
 
-
-    
     return (
         <div className="tab-pane-content contacts">
             <Tab.Container activeKey={activeKey} onSelect={setActiveKey}>

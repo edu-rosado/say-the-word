@@ -66,7 +66,7 @@ router.get("/", verifyToken, async (req,res)=>{
     const games = await Game.find({})
     return res.json(games.map(game => (
         {
-            id: game._id,
+            _id: game._id,
             title: game.title, 
             hasPassword: game.hasPassword, 
             maxParticipants: game.maxParticipants,
@@ -77,8 +77,9 @@ router.get("/", verifyToken, async (req,res)=>{
 
 // Join or leave a game
 router.put("/:gameId", verifyToken, async (req,res)=>{
+    let game = null
     try{
-        const game = await Game.find({_id: req.params.gameId})
+        game = await Game.findOne({_id: req.params.gameId})
     }catch{
         return res.status(400).json({
             errorMessage: "The game does not exist"
@@ -91,7 +92,7 @@ router.put("/:gameId", verifyToken, async (req,res)=>{
                 errorMessage: "You already are a participant in the requested game"
             })
         } else{
-            user.games.pop(req.param.gameId)
+            user.games.pop(req.params.gameId)
             await user.save()
             game.participants.pop(user.username)
             await game.save()
@@ -100,9 +101,9 @@ router.put("/:gameId", verifyToken, async (req,res)=>{
     } else{
         if (req.query.action === "join"){
             if (game.participants.length < game.maxParticipants){
-                user.games.push(req.param.gameId)
+                user.games.push(req.params.gameId)
                 await user.save()
-                game.participants.pop(user.username)
+                game.participants.push(user.username)
                 await game.save()            
                 return res.send()
             }

@@ -16,3 +16,20 @@
     max-height: 20vh;
   }
 }
+
+.game-actions-container {
+  display: none;
+  &.active {
+    display: block;
+  }
+  .disabled {
+    display: none;
+  }
+  .active {
+    display: block;
+  }
+  button {
+    width: 100%;
+    border-radius: 0;
+  }
+}

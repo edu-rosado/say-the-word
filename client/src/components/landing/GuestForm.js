@@ -9,7 +9,7 @@ export default function GuestForm() {
     const [affectedField,setAffectedField] = useState("")
     const [errorMsg,setErrorMsg] = useState("")
     const dispatch = useDispatch()
-    const history = useHistory();
+    const history = useHistory()
 
     const handleSubmit = async (e) =>{
         e.preventDefault()
@@ -20,6 +20,7 @@ export default function GuestForm() {
             setAffectedField(errorObj.affectedField)
             setErrorMsg(errorObj.errorMsg)
         } else{
+            console.log("lets push")
             history.push("/chat")
         }
     }

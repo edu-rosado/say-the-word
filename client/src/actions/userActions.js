@@ -1,6 +1,7 @@
 import {CONNECT_SOCKET, GUEST_LOGIN, LOGIN, LOGOUT_USER, REGISTER, REHYDRATE_USER,DISCONNECT_SOCKET} from './types'
 import axios from 'axios'
-import {connectToSocket, getTokenPayload} from './aux'
+import io from 'socket.io-client'
+import {getTokenPayload} from './aux'
 
 export const registerUser = (formData) => async dispatch =>{
     return await axios.post("/api/auth/register", formData)
@@ -13,8 +14,6 @@ export const registerUser = (formData) => async dispatch =>{
                     ...getTokenPayload(token),
                 }
             })
-            const socket = connectToSocket(5001, formData.username,false)
-            dispatch(storeSocket(socket))
             return null;
         }).catch(e => {return e.response.data})
 }
@@ -31,8 +30,6 @@ export const loginUser = (formData) => async dispatch =>{
                     ...tokenPayload,
                 }
             })
-            const socket = connectToSocket(5001, tokenPayload.username,false)
-            dispatch(storeSocket(socket))
             return null;
         }).catch(e => {return e.response.data})
 }
@@ -44,12 +41,10 @@ export const loginGuestUser = (formData) => async dispatch =>{
             dispatch({
                 type: GUEST_LOGIN,
                 payload: {
-                    token: token,
                     ...getTokenPayload(token),
+                    token
                 }
             })
-            const socket = connectToSocket(5001, formData.username,true)
-            dispatch(storeSocket(socket))
             return null;
         }).catch(e => {
             return e.response.data
@@ -67,7 +62,9 @@ export const logoutUser = () => {
     }
 }
 
-export const storeSocket = (socket) =>{
+export const createSocket = (username) =>{
+    const socket = io('http://localhost:5001',
+    {query: {username,},})
     return {
         type: CONNECT_SOCKET,
         payload: socket
@@ -77,7 +74,7 @@ export const disconnectFromSocket = (socket) =>{
     try{
         socket.close()
     } catch (error){
-        console.log("discon error ", error)
+        console.log(error)
     }
     return {
         type: DISCONNECT_SOCKET,
