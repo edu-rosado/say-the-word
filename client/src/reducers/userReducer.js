@@ -8,8 +8,7 @@ const initialState = {
     socket: null,
 }
 
-export default function (state = initialState, action){
-    console.log(action.type)
+export default function (state = initialState, action=null){
     switch (action.type){
         case REGISTER:
         case LOGIN:{

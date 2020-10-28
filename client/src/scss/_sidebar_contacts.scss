@@ -1,17 +1,3 @@
-// Contacts pane
-.tab-pane-content.contacts {
-  .nav {
-    margin: 0.2rem 0.2rem 0 0.2rem;
-    border-bottom: 2px solid theme-color("primary");
-  }
-  .nav-link {
-    padding: 0.3rem;
-    &.active {
-      background-color: theme-color("primary");
-    }
-  }
-}
-
 // Add friend modal
 .form-group {
   #user-key {
