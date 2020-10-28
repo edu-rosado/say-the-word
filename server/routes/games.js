@@ -106,6 +106,10 @@ router.put("/:gameId", verifyToken, async (req,res)=>{
                 game.participants.push(user.username)
                 await game.save()            
                 return res.send()
+            } else{
+                return res.status(400).json({
+                    errorMessage: "The game is full, there are no seats available"
+                })
             }
         } else{
             return res.status(400).json({
