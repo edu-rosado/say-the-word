@@ -20,7 +20,6 @@ export default function GuestForm() {
             setAffectedField(errorObj.affectedField)
             setErrorMsg(errorObj.errorMsg)
         } else{
-            console.log("lets push")
             history.push("/chat")
         }
     }

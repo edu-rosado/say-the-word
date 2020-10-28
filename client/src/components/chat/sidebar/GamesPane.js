@@ -12,7 +12,7 @@ const ALL_GAMES_KEY = "ALL_GAMES_KEY"
 
 export default function GamesPane({parentActiveKey}) {
     
-    const [activeKey, setActiveKey] = useState(ALL_GAMES_KEY)
+    const [activeKey, setActiveKey] = useState(MY_GAMES_KEY)
     const [modalIsOpen, setModalIsOpen] = useState(false)
 
     const {token, username} = useSelector(state => state.user)
@@ -45,11 +45,7 @@ export default function GamesPane({parentActiveKey}) {
                         {myGames.map(game => (
                             <GamePreview
                             key={game._id}
-                            _id={game._id}
-                            title={game.title}
-                            participants={game.participants}
-                            hasPassword={game.hasPassword}
-                            maxParticipants={game.maxParticipants}
+                            game={game}
                             isGameOfMine={true}
                             />
                         ))}
@@ -61,11 +57,7 @@ export default function GamesPane({parentActiveKey}) {
                         {notMyGames.map(game => (
                             <GamePreview
                             key={game._id}
-                            _id={game._id}
-                            title={game.title}
-                            participants={game.participants}
-                            hasPassword={game.hasPassword}
-                            maxParticipants={game.maxParticipants}
+                            game={game}
                             isGameOfMine={false}
                             />
                         ))}

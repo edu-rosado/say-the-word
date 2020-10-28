@@ -17,3 +17,6 @@ export const GET_NOT_MY_GAMES = "GET_NOT_MY_GAMES"
 export const CREATE_GAME = "START_GAME"
 export const JOIN_GAME = "JOIN_GAME"
 export const LEAVE_GAME = "LEAVE_GAME"
+
+export const SET_ACTIVE_GAME = "SET_ACTIVE_GAME"
+export const SEND_MESSAGE = "SEND_MESSAGE"

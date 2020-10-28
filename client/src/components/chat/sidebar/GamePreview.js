@@ -4,8 +4,16 @@ import { useState } from 'react'
 import { Button } from 'react-bootstrap'
 import { useDispatch, useSelector } from 'react-redux'
 import { joinLeaveGame } from '../../../actions/gameActions'
+import {setActiveGame} from '../../../actions/activeGameActions'
 
-export default function GamePreview({_id, title, participants, hasPassword, maxParticipants, isGameOfMine}) {
+export default function GamePreview({game, isGameOfMine}) {
+    const {
+        _id, 
+        title, 
+        participants, 
+        hasPassword, 
+        maxParticipants
+    } = game
     let participantString = participants.reduce(
         (myString, participant) => myString + `${participant}, `, ""
     ).slice(0, -2)
@@ -20,13 +28,24 @@ export default function GamePreview({_id, title, participants, hasPassword, maxP
         const error = await dispatch(joinLeaveGame(token, _id, username, "join"))
         if (error){
             console.log(error)
+        } else{
+            dispatch(setActiveGame(game))
         }
     }
     const handleLeave = async () =>{
         const error = await dispatch(joinLeaveGame(token, _id, username, "leave"))
         if (error){
             console.log(error)
+        } else{
+            dispatch(setActiveGame({}))
         }
+    }
+
+    const displayGame = () => {
+        if (isGameOfMine){
+            dispatch(setActiveGame(game))
+        }
+        
     }
 
     useEffect(()=>{
@@ -38,7 +57,9 @@ export default function GamePreview({_id, title, participants, hasPassword, maxP
     },[isJoinBtnActive, isGameOfMine])
     
     return (
-        <div className="game-preview-container">
+        <div className="game-preview-container"
+            onClick={displayGame}
+        >
             <div
                 className="sidebar-item-preview"
                 onClick={()=> setisJoinBtnActive

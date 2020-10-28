@@ -20,6 +20,7 @@ export default function GameContactSelection({setParticipants}) {
         }else{
             return (friends.map(friendName => (
                 <ContactPreview
+                    key={friendName}
                     name={friendName}
                     activeClass="sticky"
                 />

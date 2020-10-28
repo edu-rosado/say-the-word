@@ -1,0 +1,29 @@
+.m-chat {
+  display: flex;
+  flex-direction: column;
+  .upper-container {
+    flex-grow: 2;
+    background-color: lightcoral;
+  }
+  .messages-container {
+    flex-grow: 20;
+    background-color: lightgreen;
+  }
+  .input-container {
+    flex-grow: 1;
+    form,
+    .input-group,
+    textarea {
+      height: 100%;
+    }
+    textarea {
+      resize: none;
+    }
+    .input-group-append {
+      min-width: 20%;
+      button {
+        width: 100%;
+      }
+    }
+  }
+}
