@@ -1,6 +1,6 @@
 import React from 'react'
 import Sidebar from './sidebar/Sidebar'
-import Chat from './Chat'
+import Chat from './chat/Chat'
 
 import Axios from 'axios';
 import { useHistory } from 'react-router-dom';

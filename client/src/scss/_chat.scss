@@ -46,7 +46,34 @@
   }
   .messages-container {
     flex-grow: 20;
-    background-color: lightgreen;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    overflow-y: scroll;
+    padding: 0.5rem;
+
+    .msg-block {
+      width: fit-content;
+      background-color: lightblue;
+      margin: 0.3rem 0;
+      padding: 0.5rem 0.8rem;
+      border-radius: 15px;
+      &.self {
+        background-color: lightgreen;
+        align-self: flex-end;
+      }
+      .msg-author {
+        color: rgb(14, 119, 119);
+        font-weight: 700;
+      }
+      .msg-text {
+      }
+      .msg-time {
+        text-align: end;
+        color: rgb(99, 99, 99);
+        font-size: 0.9rem;
+      }
+    }
   }
   .input-container {
     flex-grow: 1;
@@ -62,6 +89,7 @@
       min-width: 20%;
       button {
         width: 100%;
+        font-size: 2rem;
       }
     }
   }

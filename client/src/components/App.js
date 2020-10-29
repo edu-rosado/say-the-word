@@ -1,6 +1,6 @@
 import React from 'react';
 import Landing from './landing/Landing'
-import ChatDashboard from './chat/Dashboard'
+import ChatDashboard from './dashboard/Dashboard'
 import {BrowserRouter as Router, Switch} from 'react-router-dom'
 import PrivateRoute from './PrivateRoute'
 import RestrictedRoute from './RestrictedRoute'
