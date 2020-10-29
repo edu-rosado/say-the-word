@@ -3,7 +3,46 @@
   flex-direction: column;
   .upper-container {
     flex-grow: 2;
-    background-color: lightcoral;
+    display: flex;
+    flex-direction: column;
+    padding: 0 0.5rem;
+    .game-info-actions {
+      flex-grow: 1;
+      display: flex;
+      align-items: center;
+      i {
+        font-size: 1.7rem;
+        padding: 0 0.5rem 0 1rem;
+      }
+    }
+    .word-container {
+      flex-grow: 1;
+      display: flex;
+      align-items: center;
+      span {
+        padding-right: 1rem;
+      }
+      .word-box {
+        height: 100%;
+        flex-grow: 1;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        .word {
+          font-weight: 700;
+        }
+      }
+      .skip-box {
+        height: 100%;
+        flex-grow: 1;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        .time {
+          font-weight: 700;
+        }
+      }
+    }
   }
   .messages-container {
     flex-grow: 20;
