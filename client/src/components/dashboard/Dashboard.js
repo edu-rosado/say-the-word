@@ -8,10 +8,13 @@ import { useDispatch, useSelector } from 'react-redux';
 import { useEffect } from 'react';
 import { getTokenConfig } from '../../actions/aux';
 import { createSocket } from '../../actions/userActions';
+import { storeMessage } from '../../actions/gameActions';
 
 export default function Dashboard() {
 
     const {username, token} = useSelector(state => state.user)
+    const myGames = useSelector(state => state.games.myGames)
+    const socket = useSelector(state => state.socket)
     const history = useHistory();
     const dispatch = useDispatch();
 
@@ -26,6 +29,22 @@ export default function Dashboard() {
                 history.push("/")
             })
     },[])
+
+    useEffect(() => {
+        if (socket !== null){
+            socket.on("message",({msg,gameId}) =>{
+                dispatch(storeMessage())
+            })
+        }
+    }, [socket])
+    useEffect(() => {
+        if (socket !== null){
+            myGames.forEach(game => {
+                console.log("joining "+game._id)
+                socket.emit("join", game._id)
+            })
+        }
+    }, [myGames, socket])
 
     return (
         <div className="m-dashboard-container">

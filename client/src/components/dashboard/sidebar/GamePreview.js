@@ -3,8 +3,7 @@ import { useEffect } from 'react'
 import { useState } from 'react'
 import { Button } from 'react-bootstrap'
 import { useDispatch, useSelector } from 'react-redux'
-import { joinLeaveGame } from '../../../actions/gameActions'
-import {setActiveGame} from '../../../actions/activeGameActions'
+import { joinLeaveGame, resetMineActiveId } from '../../../actions/gameActions'
 
 export default function GamePreview({game, isGameOfMine}) {
     const {
@@ -18,53 +17,50 @@ export default function GamePreview({game, isGameOfMine}) {
         (myString, participant) => myString + `${participant}, `, ""
     ).slice(0, -2)
 
-    const [isJoinBtnActive, setisJoinBtnActive] = useState(false)
     const [actionsContainerClass, setactionsContainerClass] = useState("game-actions-container")
 
     const {token, username} = useSelector(state => state.user)
+    const {activeMineId,activeNotMineId} = useSelector(state => state.games)
     const dispatch = useDispatch()
 
     const handleJoin = async () =>{
         const error = await dispatch(joinLeaveGame(token, _id, username, "join"))
         if (error){
             console.log(error)
-        } else{
-            dispatch(setActiveGame(game))
         }
     }
     const handleLeave = async () =>{
+        dispatch(resetMineActiveId())
         const error = await dispatch(joinLeaveGame(token, _id, username, "leave"))
         if (error){
             console.log(error)
-        } else{
-            dispatch(setActiveGame({}))
         }
-    }
-
-    const displayGame = () => {
-        if (isGameOfMine){
-            dispatch(setActiveGame(game))
-        }
-        
     }
 
     useEffect(()=>{
-        if (isJoinBtnActive){
+        if (activeMineId === _id){
             setactionsContainerClass("game-actions-container active")
         } else{
             setactionsContainerClass("game-actions-container")
         }
-    },[isJoinBtnActive, isGameOfMine])
+    },[activeMineId])
+    useEffect(()=>{
+        if (activeNotMineId === _id){
+            setactionsContainerClass("game-actions-container active")
+        } else{
+            setactionsContainerClass("game-actions-container")
+        }
+    },[activeNotMineId])
     
     return (
-        <div className="game-preview-container"
-            onClick={displayGame}
+        <div 
+            className="game-preview-container"
+            // onClick={displayGame}
         >
             <div
                 className="sidebar-item-preview"
-                onClick={()=> setisJoinBtnActive
-                    (!isJoinBtnActive)
-                }
+                data-id={_id}
+                data-isMine={isGameOfMine}
             >
                 <h3>{title}</h3>
                 <p className="text-muted">{participantString}</p>

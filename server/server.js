@@ -40,24 +40,7 @@ Game.deleteMany({},()=>{console.log("Flushed DB")})
 async function myFunc(){
     const bcrypt = require("bcryptjs")
     const salt = await bcrypt.genSalt(10)
-    const u2 = new User({
-        username: "222222",
-        email: "2@1.com",
-        password:  await bcrypt.hash("111111", salt),
-        isGuest: false,
-        isOnline: true,
-        friends: [],
-    })
-    await u2.save()
-    const u3 = new User({
-        username: "333333",
-        email: "3@1.com",
-        password:  await bcrypt.hash("111111", salt),
-        isGuest: false,
-        isOnline: true,
-        friends: [],
-    })
-    await u3.save()
+
     const g1 = await new Game({
         title: "game 1",
         hasPassword: false,
@@ -67,15 +50,28 @@ async function myFunc(){
         messages: [],
     })
     await g1.save()
-    const g2 = await new Game({
-        title: "game 2",
-        hasPassword: false,
-        password: "no_password",
-        participants: ["111111","222222"],
-        maxParticipants: 3,
-        messages: [],
+
+    const u2 = new User({
+        username: "222222",
+        email: "2@1.com",
+        password:  await bcrypt.hash("111111", salt),
+        isGuest: false,
+        isOnline: true,
+        friends: [],
+        games: [g1],
     })
-    await g2.save()
+    await u2.save()
+    const u3 = new User({
+        username: "333333",
+        email: "3@1.com",
+        password:  await bcrypt.hash("111111", salt),
+        isGuest: false,
+        isOnline: true,
+        friends: [],
+        games: [],
+    })
+    await u3.save()
+
     const u1 = new User({
         username: "111111",
         email: "1@1.com",
@@ -83,7 +79,7 @@ async function myFunc(){
         isGuest: false,
         isOnline: true,
         friends: [u2.username, u3.username],
-        games: [g1]
+        games: [g1],
     })
     await u1.save()
     console.log("g1: ", g1._id)
@@ -100,17 +96,26 @@ function setUpSocket(){
         user.isOnline = true;
         await user.save()
 
-        socket.on("join", async (roomId)=>{
-            const game = await Game.findOne({_id: roomId})
+        socket.on("join", async (gameId)=>{
+            // console.log(111, gameId, username)
+            // console.log(Object.keys(socket.rooms))
+            const game = await Game.findOne({_id: gameId})
             if (game){
-                game.participants.push(username)
-                await game.save()
-                socket.join(username)
-                socket.to(roomId).emit("newParticipant", username)
+                socket.join(gameId)
+                socket.to(gameId).emit("newParticipant", username)
                 socket.emit("joinAck","All good")
             } else{
                 socket.emit("joinAck","Requested game does not exist")
+                console.log("nope")
             }
+            // console.log(222, gameId, username)
+            // console.log(Object.keys(socket.rooms))
+
+        })
+
+        socket.on("message", ({gameId, msgText}) =>{
+            socket.to(gameId).emit("message",msgText)
+            console.log("broadcasting msg")
         })
 
         socket.on("disconnect", async (reason)=>{

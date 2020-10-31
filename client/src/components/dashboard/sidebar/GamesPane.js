@@ -2,7 +2,7 @@ import React, { useState } from 'react'
 import { useEffect } from 'react'
 import { Button, Modal, Nav, Tab } from 'react-bootstrap'
 import { useSelector,useDispatch } from 'react-redux'
-import { getGames } from '../../../actions/gameActions'
+import { getGames, setMineActiveId, setNotMineActiveId } from '../../../actions/gameActions'
 import GamePreview from './GamePreview'
 import GameModal from './modals/GameModal'
 import { GAMES_KEY } from './Sidebar'
@@ -24,6 +24,16 @@ export default function GamesPane({parentActiveKey}) {
             dispatch(getGames(token, username))
         }
     },[parentActiveKey])
+
+    const handleOnClickGames = (e) =>{
+        if(e.target.tagName !== "BUTTON"){
+            if(e.target.getAttribute("data-isMine") === "true"){
+                dispatch(setMineActiveId(e.target.getAttribute("data-id")))
+            } else{
+                dispatch(setNotMineActiveId(e.target.getAttribute("data-id")))
+            }
+        }
+    }
     
     return (
         <div className="tab-pane-content games">
@@ -41,6 +51,7 @@ export default function GamesPane({parentActiveKey}) {
                     <Tab.Pane 
                         eventKey={MY_GAMES_KEY}
                         className="game-list"
+                        onClick={handleOnClickGames}
                     >
                         {myGames.map(game => (
                             <GamePreview
@@ -53,6 +64,7 @@ export default function GamesPane({parentActiveKey}) {
                     <Tab.Pane 
                         eventKey={ALL_GAMES_KEY}
                         className="game-list"
+                        onClick={handleOnClickGames}
                     >
                         {notMyGames.map(game => (
                             <GamePreview

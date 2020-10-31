@@ -84,7 +84,6 @@ export default function GamesModal({setModalIsOpen}) {
         setSelectedName(username)
         setSearchActivated(false)
         setSubmitIsActive(true)
-        console.log("true")
     }
 
     useEffect(()=>{

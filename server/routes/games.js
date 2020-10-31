@@ -57,22 +57,37 @@ router.post("/", verifyToken, async (req,res)=>{
         title: game.title, 
         hasPassword: game.hasPassword, 
         maxParticipants: game.maxParticipants,
-        participants: game.participants,        
+        participants: game.participants,
+        messages: game.messages,        
     })  
 })
 
 // Get all games
 router.get("/", verifyToken, async (req,res)=>{
     const games = await Game.find({})
-    return res.json(games.map(game => (
-        {
-            _id: game._id,
-            title: game.title, 
-            hasPassword: game.hasPassword, 
-            maxParticipants: game.maxParticipants,
-            participants: game.participants,
+    // For games in which the user is a participant, send the messages, don't do it on the rest!
+    // TODO: implement a cache for this
+    const gamesToReturn = games.map(game => {
+        if (game.participants.includes(req.user.username)){
+            return {
+                _id: game._id,
+                title: game.title, 
+                hasPassword: game.hasPassword, 
+                maxParticipants: game.maxParticipants,
+                participants: game.participants,
+                messages: game.messages,
+            }
+        } else{
+            return {
+                _id: game._id,
+                title: game.title, 
+                hasPassword: game.hasPassword, 
+                maxParticipants: game.maxParticipants,
+                participants: game.participants,
+            }
         }
-    )))
+    })
+    return res.json(gamesToReturn)
 })
 
 // Join or leave a game
@@ -119,5 +134,32 @@ router.put("/:gameId", verifyToken, async (req,res)=>{
     }
     
 })
+
+router.post("/:gameId/messages", verifyToken, async (req,res)=>{
+    let game = null
+    try{
+        game = await Game.findOne({_id: req.params.gameId})
+    }catch{
+        return res.status(400).json({
+            errorMessage: "The game does not exist"
+        })
+    }
+    const user = await User.findOne({username: req.user.username})
+    if (user.games.includes(req.params.gameId)){
+        const msg = {
+            author: user.username,
+            text: req.body.text,
+            date: new Date(),
+        }
+        game.messages.push(msg)
+        await game.save()
+        return res.status(200).json(msg)
+    } else{
+            return res.status(400).json({
+                errorMessage: "You are not a participant of the requested game"
+            })
+        }
+})
+
 
 module.exports = router

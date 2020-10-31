@@ -1,5 +1,4 @@
 import {combineReducers} from 'redux'
-import activeGameReducer from './activeGameReducer'
 import contactsReducer from './contactsReducer'
 import friendsReducer from './friendsReducer'
 import gamesReducer from './gamesReducer'
@@ -12,5 +11,4 @@ export default combineReducers({
     contacts: contactsReducer,
     friends: friendsReducer,
     games: gamesReducer,
-    activeGame: activeGameReducer,
 })

@@ -31,7 +31,9 @@ export const loginUser = (formData) => async dispatch =>{
                 }
             })
             return null;
-        }).catch(e => {return e.response.data})
+        }).catch(e => {
+            return e.response.data
+        })
 }
 
 export const loginGuestUser = (formData) => async dispatch =>{

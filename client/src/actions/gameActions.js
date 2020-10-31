@@ -1,6 +1,6 @@
 import axios from 'axios'
 import {getTokenConfig} from './aux'
-import {CREATE_GAME, GET_MY_GAMES, GET_NOT_MY_GAMES, JOIN_GAME, LEAVE_GAME} from './types'
+import {CREATE_GAME, GET_MY_GAMES, GET_NOT_MY_GAMES, JOIN_GAME, LEAVE_GAME, RESET_ACTIVE_ID, RESET_MINE_ACTIVE_ID, SET_ACTIVE_ID, SET_MINE_ACTIVE_ID, SET_NOT_MINE_ACTIVE_ID, STORE_MESSAGE} from './types'
 
 export const createGame = (token,gameData) => async dispatch =>{
     const config = getTokenConfig(token)
@@ -48,8 +48,44 @@ export const joinLeaveGame = (token,gameId, username, action) => async dispatch 
             })
             return null
         }).catch(e=>{
-            return e.response.data.errorMsg
+            return e.response.data.errorMessage
         })
 }
 
+export const setMineActiveId = (gameId) =>{
+    return {
+        type: SET_MINE_ACTIVE_ID,
+        payload: gameId
+    }
+}
+export const setNotMineActiveId = (gameId) =>{
+    return {
+        type: SET_NOT_MINE_ACTIVE_ID,
+        payload: gameId
+    }
+}
+export const resetMineActiveId = () =>{
+    return {
+        type: RESET_MINE_ACTIVE_ID,
+    }
+}
+
+export const storeMessage = (msg, gameId) =>{
+    return {
+        type: STORE_MESSAGE,
+        payload: {msg, gameId}
+    }
+}
+
+export const sendMessage = (token, gameId, msgText, socket) => async dispatch => {
+    const config = getTokenConfig(token)
+    const body = {text: msgText}
+    return axios.post(`/api/games/${gameId}/messages`, body, config)
+        .then(res =>{
+            dispatch(storeMessage(res.data, gameId))
+            socket.emit("message", {gameId, msgText:res.data.text})
+            return null
+        })
+        .catch(err => {return err})
+}
 

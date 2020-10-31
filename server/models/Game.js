@@ -8,8 +8,8 @@ const gameSchema = new mongoose.Schema({
     maxParticipants: Number,
     messages: [{
         author: String, // the username
-        body: String,
-        // TODO: add date
+        text: String,
+        date: Date,
     }],
 })
 

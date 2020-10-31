@@ -1,12 +1,12 @@
 import React from 'react'
 
-export default function Message({author, text}) {
+export default function Message({author, text, date, authorIsSelf}) {
 
     return (
-<div className={"msg-block" + (author === "" ? " self" : "")}>
-    <div className="msg-author">{author}</div>
+<div className={"msg-block" + (authorIsSelf? " self" : "")}>
+    <div className="msg-author">{authorIsSelf? "" : author}</div>
     <div className="msg-text">{text}</div>
-    <div className="msg-time">14:30</div>
+    <div className="msg-time">{date}</div>
 </div>
     )
 }
