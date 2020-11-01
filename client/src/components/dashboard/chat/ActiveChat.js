@@ -1,15 +1,23 @@
+import Axios from 'axios'
 import React from 'react'
 import { useRef } from 'react'
 import { useEffect } from 'react'
 import { useState } from 'react'
 import { Button, Form, InputGroup } from 'react-bootstrap'
 import { useDispatch, useSelector } from 'react-redux'
+import { getTokenConfig } from '../../../actions/aux'
 import { sendMessage } from '../../../actions/gameActions'
 import Message from './Message'
 
+const SKIP_SECONDS = 5
+
 export default function ActiveChat() {
 
+    const [myWord, setmyWord] = useState(null)
+    const [time, setTime] = useState("1:30")
+    const [remainingseconds, setremainingseconds] = useState(SKIP_SECONDS)
     const [inputMsg, setInputMsg] = useState("")
+    const [disableSkip, setdisableSkip] = useState(true)
     const [activeGame, setActiveGame] = useState({
         title:"", messages:[],
     })
@@ -24,9 +32,40 @@ export default function ActiveChat() {
         messagesEndRef.current.scrollIntoView({ behavior: 'smooth' })
     }
 
+    let intv = null
+
     useEffect(()=>{
         scrollToBottom()
+        const error = getWord()
+        if (error !== null){
+            console.log(error)
+        }
+        startTimer()
+        return () => clearInterval(intv)
     },[])
+
+    const startTimer = ()=>{
+        intv = setInterval(() => {
+            setremainingseconds(prev => prev - 1)
+        }, 1000);
+    }
+
+    useEffect(() => {
+        if (remainingseconds < 0){
+            clearInterval(intv)
+            setdisableSkip(false)
+        }else{
+            let minutes = Math.floor(remainingseconds/60)
+            if (minutes < 10){
+                minutes = `0${minutes}`
+            }
+            let seconds = Math.floor(remainingseconds%60)
+            if (seconds < 10){
+                seconds = `0${seconds}`
+            }
+            setTime(`${minutes}:${seconds}`)
+        }
+    }, [remainingseconds])
 
     useEffect(() => {
         if (activeMineId !== -1){
@@ -37,8 +76,24 @@ export default function ActiveChat() {
     }, [activeMineId])
     
 
+    const getWord = async() =>{
+        const config = getTokenConfig(token)
+        return await Axios.get("/api/words/random", config)
+            .then(res => {
+                setmyWord(res.data.word)
+                return null
+            })
+            .catch(err => err)
+    }
     const handleSkip = () =>{
-        // TODO
+        const error = getWord()
+        if (error !== null){
+            console.log(error)
+        }
+        setdisableSkip(true)
+        setremainingseconds(SKIP_SECONDS)
+        startTimer()
+        
     }
     const handleSubmit = async () => {
         const error = await dispatch(sendMessage(
@@ -66,13 +121,13 @@ export default function ActiveChat() {
         <div className="word-container">
             <div className="word-box">
                 <span>Your word: </span>
-                <span className="word">XXXXXXX</span>
+                <span className="word">{myWord}</span>
             </div>
             <div className="skip-box">
                 <span>Time to skip: </span>
-                <span className="time">01:30</span>
+                <span className="time">{time}</span>
                 <Button
-                    disabled={true}
+                    disabled={disableSkip}
                     className="skip-btn"
                     onClick={handleSkip}
                 >Skip word</Button>

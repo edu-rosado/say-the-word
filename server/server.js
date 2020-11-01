@@ -9,6 +9,7 @@ const authRouter = require("./routes/auth")
 const contactsRouter = require("./routes/contacts")
 const friendsRouter = require("./routes/friends")
 const gamesRouter = require("./routes/games")
+const wordsRouter = require("./routes/words")
 
 mongoose.connect(process.env.DB_URI,
     { 
@@ -26,6 +27,7 @@ app.use("/api/auth", authRouter)
 app.use("/api/friends", friendsRouter)
 app.use("/api/contacts", contactsRouter)
 app.use("/api/games", gamesRouter)
+app.use("/api/words", wordsRouter)
 
 app.listen(process.env.PORT || 5000);
 
