@@ -32,8 +32,8 @@ export default function Dashboard() {
 
     useEffect(() => {
         if (socket !== null){
-            socket.on("message",({msg,gameId}) =>{
-                dispatch(storeMessage())
+            socket.on("message",({gameId,msg}) =>{
+                dispatch(storeMessage(msg, gameId))
             })
         }
     }, [socket])

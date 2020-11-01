@@ -113,9 +113,8 @@ function setUpSocket(){
 
         })
 
-        socket.on("message", ({gameId, msgText}) =>{
-            socket.to(gameId).emit("message",msgText)
-            console.log("broadcasting msg")
+        socket.on("message", ({gameId, msg}) =>{
+            socket.to(gameId).emit("message",{gameId, msg})
         })
 
         socket.on("disconnect", async (reason)=>{

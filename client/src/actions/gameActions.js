@@ -84,7 +84,7 @@ export const sendMessage = (token, gameId, msgText, socket) => async dispatch =>
     return axios.post(`/api/games/${gameId}/messages`, body, config)
         .then(res =>{
             dispatch(storeMessage(res.data, gameId))
-            socket.emit("message", {gameId, msgText:res.data.text})
+            socket.emit("message", {gameId, msg:res.data})
             return null
         })
         .catch(err => {return err})
