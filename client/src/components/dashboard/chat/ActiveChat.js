@@ -30,9 +30,17 @@ export default function ActiveChat() {
 
     useEffect(() => {
         if (activeMineId !== -1){
+            console.log(myGames)
+            console.log(activeMineId)
+            console.log(myGames.find(
+                game => game._id === activeMineId
+            ))
             setActiveGame(myGames.find(
                 game => game._id === activeMineId
             ))
+        }
+        else{
+            console.log("ERROR: active chat without an id")
         }
     }, [activeMineId])
     

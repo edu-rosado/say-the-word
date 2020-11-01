@@ -26,26 +26,28 @@ export default function(state=initialState, action=null){
             const {_id, username} = action.payload
             const game2join = state.notMyGames.find(game => game._id === _id)
             game2join.participants.push(username)
+            game2join.messages = []
             return{
                 ...state,
                 myGames: [...state.myGames, game2join],
                 notMyGames: state.notMyGames.filter(
                     game => game._id !== _id
                 ),
-                activeMineId: state.myGames[-1]._id,
+                activeMineId: _id,
             }
         }
         case LEAVE_GAME:{
             const {_id, username} = action.payload
             const game2leave = state.myGames.find(game => game._id === _id)
             game2leave.participants.pop(username)
+            game2leave.messages = []
             return{
                 ...state,
                 notMyGames: [...state.notMyGames, game2leave],
                 myGames: state.myGames.filter(
                     game => game._id !== _id
                 ),
-                activeMineId: state.myGames[-2],
+                activeMineId: -1,
             }
         }
         case RESET_MINE_ACTIVE_ID:

@@ -48,6 +48,7 @@ export const joinLeaveGame = (token,gameId, username, action) => async dispatch 
             })
             return null
         }).catch(e=>{
+            console.log(e)
             return e.response.data.errorMessage
         })
 }
