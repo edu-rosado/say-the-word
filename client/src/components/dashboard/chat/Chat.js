@@ -19,12 +19,12 @@ export default function Chat() {
     }, [activeMineId, myGames])
 
     return (
-<div className="m-chat">
+<>
     {
         activeMineId === -1 ? 
             <InactiveChat/>
         :   <ActiveChat/>
     }
-</div>
+</>
     )
 }

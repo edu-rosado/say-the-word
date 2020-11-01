@@ -99,3 +99,39 @@
     }
   }
 }
+
+.inactive-chat-container {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+
+  .main-message {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    h3 {
+      text-align: center;
+      padding: 2rem 0.5rem;
+      font-weight: 700;
+    }
+    i {
+      font-size: 3rem;
+      padding: 0 0.3rem;
+    }
+  }
+
+  .get-started {
+    padding: 2rem;
+
+    .option {
+      display: flex;
+      align-items: center;
+      font-size: 1.3rem;
+      padding: 0.3rem 0;
+      p {
+        margin: 0 0.8rem;
+      }
+    }
+  }
+}

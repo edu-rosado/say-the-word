@@ -57,8 +57,8 @@ export default function ActiveChat() {
     }
 
     return (
-<>
-<div className="upper-container">
+<div className="m-chat">
+    <div className="upper-container">
         <div className="game-info-actions">
             <div className="title">{activeGame.title}</div>
             <i class="fas fa-address-book"></i>
@@ -109,6 +109,6 @@ export default function ActiveChat() {
             </InputGroup>
         </Form>
     </div>
-</>
+</div>
     )
 }
