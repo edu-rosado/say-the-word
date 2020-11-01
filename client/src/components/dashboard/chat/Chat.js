@@ -1,5 +1,6 @@
-import React from 'react'
-import { useSelector } from 'react-redux'
+import React, { useEffect } from 'react'
+import { useDispatch, useSelector } from 'react-redux'
+import { setMineActiveId } from '../../../actions/gameActions'
 import ActiveChat from './ActiveChat'
 import InactiveChat from './InactiveChat'
 
@@ -7,6 +8,15 @@ import InactiveChat from './InactiveChat'
 export default function Chat() {
 
     const activeMineId = useSelector(state => state.games.activeMineId)
+    const myGames = useSelector(state => state.games.myGames)
+    const dispatch = useDispatch()
+
+    // If no game active, but myGames is not empty, activate first game
+    useEffect(() => {
+        if (activeMineId === -1 && (myGames.length > 0)){
+            dispatch(setMineActiveId(myGames[0]._id))
+        }
+    }, [activeMineId, myGames])
 
     return (
 <div className="m-chat">
