@@ -66,7 +66,7 @@ export const logoutUser = () => {
 
 export const createSocket = (username) =>{
     const socketURL = (process.env.NODE_ENV === 'production'
-        ? window.location.hostname
+        ? window.location.hostname + ":5001"
         : 'https://localhost:5001')
     const socket = io.connect(socketURL, {query: {username,}, secure: true})
     return {
