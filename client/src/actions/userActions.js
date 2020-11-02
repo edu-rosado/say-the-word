@@ -65,8 +65,8 @@ export const logoutUser = () => {
 }
 
 export const createSocket = (username) =>{
-    const socket = io('http://localhost:5001',
-    {query: {username,},})
+    const socket = io('https://localhost:5001',
+    {query: {username,}, secure: true})
     return {
         type: CONNECT_SOCKET,
         payload: socket
