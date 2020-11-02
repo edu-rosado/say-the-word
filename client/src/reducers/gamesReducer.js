@@ -1,4 +1,4 @@
-import { CREATE_GAME, GET_MY_GAMES, GET_NOT_MY_GAMES, JOIN_GAME, LEAVE_GAME, RESET_ACTIVE_ID, RESET_MINE_ACTIVE_ID, SET_ACTIVE_ID, SET_MINE_ACTIVE_ID, SET_NOT_MINE_ACTIVE_ID, STORE_MESSAGE } from "../actions/types";
+import { ADD_PARTICIPANT, CREATE_GAME, GAIN_POINT, GET_MY_GAMES, GET_NOT_MY_GAMES, JOIN_GAME, LEAVE_GAME, LOGOUT_GAMES, RESET_ACTIVE_ID, RESET_MINE_ACTIVE_ID, SET_ACTIVE_ID, SET_MINE_ACTIVE_ID, SET_NOT_MINE_ACTIVE_ID, STORE_MESSAGE } from "../actions/types";
 const initialState = {
     myGames:[],
     notMyGames:[],
@@ -23,31 +23,43 @@ export default function(state=initialState, action=null){
                 notMyGames: action.payload
             }
         case JOIN_GAME:{
-            const {_id, username} = action.payload
-            const game2join = state.notMyGames.find(game => game._id === _id)
-            game2join.participants.push(username)
-            game2join.messages = []
+            const {game} = action.payload
             return{
                 ...state,
-                myGames: [...state.myGames, game2join],
+                myGames: [...state.myGames, game],
                 notMyGames: state.notMyGames.filter(
-                    game => game._id !== _id
+                    notMyGame => notMyGame._id !== game._id
                 ),
-                activeMineId: _id,
+                activeMineId: game._id,
             }
         }
         case LEAVE_GAME:{
-            const {_id, username} = action.payload
-            const game2leave = state.myGames.find(game => game._id === _id)
+            const {game, username} = action.payload
+            const game2leave = state.myGames.find(g => g._id === game._id)
             game2leave.participants.pop(username)
+            delete game2leave.points[username]
+            game2leave.targetWord = null
             game2leave.messages = []
             return{
                 ...state,
                 notMyGames: [...state.notMyGames, game2leave],
                 myGames: state.myGames.filter(
-                    game => game._id !== _id
+                    g => g._id !== game._id
                 ),
                 activeMineId: -1,
+            }
+        }
+        case ADD_PARTICIPANT:{
+            const {username, gameId} = action.payload
+            return {
+                ...state, 
+                myGames: state.myGames.map(game =>{
+                    if (game._id == gameId){
+                        game.participants.push(username)
+                        game.points[username] = 0
+                    }
+                    return game
+                })
             }
         }
         case RESET_MINE_ACTIVE_ID:
@@ -80,6 +92,20 @@ export default function(state=initialState, action=null){
                     return game
                 })
             }
+        case GAIN_POINT:{
+            const {gameId, username} = action.payload
+            return {
+                ...state, 
+                myGames: state.myGames.map(game =>{
+                    if (game._id == gameId){
+                        game.points[username] += 1
+                    }
+                    return game
+                })
+            }
+        }
+        case LOGOUT_GAMES:
+            return initialState
         default:
             return state
     }

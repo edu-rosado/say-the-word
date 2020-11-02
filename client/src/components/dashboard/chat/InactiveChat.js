@@ -26,11 +26,11 @@ export default function InactiveChat() {
                 </div>
                 <div className="option">
                     <i class="fas fa-angle-double-left"></i>
-                    <p>Join a public game in "AllGames"</p>
+                    <p>Join a public game in "All Games"</p>
                 </div>
                 <div className="option">
                     <i class="fas fa-angle-double-left"></i>
-                    <p>Join a game by id (NOT WORKING)</p>
+                    <p>Join a game by id (NOT IMPLEMENTED YET)</p>
                 </div>
             </div>
         </div>

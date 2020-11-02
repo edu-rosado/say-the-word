@@ -9,18 +9,20 @@ import { getTokenConfig } from '../../../actions/aux'
 import { sendMessage } from '../../../actions/gameActions'
 import Message from './Message'
 
-const SKIP_SECONDS = 5
+const SKIP_SECONDS = 10
 
 export default function ActiveChat() {
 
     const [myWord, setmyWord] = useState(null)
-    const [time, setTime] = useState("1:30")
-    const [remainingseconds, setremainingseconds] = useState(SKIP_SECONDS)
+    const [time, setTime] = useState("00:00")
+    const [remainingseconds, setremainingseconds] = useState(0)
+    const [intervalId, setintervalId] = useState(null)
     const [inputMsg, setInputMsg] = useState("")
-    const [disableSkip, setdisableSkip] = useState(true)
-    const [activeGame, setActiveGame] = useState({
-        title:"", messages:[],
+    const [disableSkip, setdisableSkip] = useState(false)
+    const [activeGame, setActiveGame] = useState( {
+            title:"", messages:[], points:{},
     })
+    const [points, setPoints] = useState(0)
 
     const {myGames,activeMineId}  = useSelector(state => state.games)
     const socket  = useSelector(state => state.socket)
@@ -32,27 +34,18 @@ export default function ActiveChat() {
         messagesEndRef.current.scrollIntoView({ behavior: 'smooth' })
     }
 
-    let intv = null
-
     useEffect(()=>{
-        scrollToBottom()
-        const error = getWord()
-        if (error !== null){
-            console.log(error)
+        console.log("activeGame changed")
+        console.log(activeGame._id !== null && Object.keys(activeGame.points).includes(username))
+        if (activeGame._id !== null && Object.keys(activeGame.points).includes(username)){
+            setPoints(activeGame.points[username])
+            scrollToBottom()          
         }
-        startTimer()
-        return () => clearInterval(intv)
-    },[])
-
-    const startTimer = ()=>{
-        intv = setInterval(() => {
-            setremainingseconds(prev => prev - 1)
-        }, 1000);
-    }
+    },[activeGame])
 
     useEffect(() => {
         if (remainingseconds < 0){
-            clearInterval(intv)
+            clearInterval(intervalId)
             setdisableSkip(false)
         }else{
             let minutes = Math.floor(remainingseconds/60)
@@ -69,24 +62,34 @@ export default function ActiveChat() {
 
     useEffect(() => {
         if (activeMineId !== -1){
-            setActiveGame(myGames.find(
+            const updatedGame = myGames.find(
                 game => game._id === activeMineId
-            ))
+            )
+            setPoints(updatedGame.points[username])
+            scrollToBottom()   
+            setActiveGame(updatedGame)
         }
-    }, [activeMineId])
+    }, [activeMineId, myGames])
     
+    const startTimer = ()=>{
+        let intv = setInterval(() => {
+            setremainingseconds(prev => prev - 1)
+        }, 1000);
+        setintervalId(intv)
+    }
 
     const getWord = async() =>{
         const config = getTokenConfig(token)
-        return await Axios.get("/api/words/random", config)
+        console.log(`/api/games/${activeGame._id}/new-word`)
+        return await Axios.get(`/api/games/${activeGame._id}/new-word`, config)
             .then(res => {
                 setmyWord(res.data.word)
                 return null
             })
-            .catch(err => err)
+            .catch(err => err.response.data.errorMessage)
     }
-    const handleSkip = () =>{
-        const error = getWord()
+    const handleSkip = async () =>{
+        const error = await getWord()
         if (error !== null){
             console.log(error)
         }
@@ -115,7 +118,10 @@ export default function ActiveChat() {
 <div className="m-chat">
     <div className="upper-container">
         <div className="game-info-actions">
-            <div className="title">{activeGame.title}</div>
+            <div className="title"><h3>{activeGame.title}</h3></div>
+            <div className="points-box">
+                <p>Points</p> <p className="points-num">{points}</p>
+            </div>
             <i class="fas fa-address-book"></i>
         </div>
         <div className="word-container">

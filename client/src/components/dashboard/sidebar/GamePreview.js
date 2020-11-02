@@ -30,11 +30,11 @@ export default function GamePreview({game, isGameOfMine}) {
         }
     }
     const handleLeave = async () =>{
-        dispatch(resetMineActiveId())
         const error = await dispatch(joinLeaveGame(token, _id, username, "leave"))
         if (error){
             console.log(error)
         }
+        dispatch(resetMineActiveId())
     }
 
     useEffect(()=>{

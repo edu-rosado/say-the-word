@@ -26,7 +26,8 @@ export default function GamesPane({parentActiveKey}) {
     },[parentActiveKey])
 
     const handleOnClickGames = (e) =>{
-        if(e.target.tagName !== "BUTTON"){
+        const id = e.target.getAttribute("data-isMine")
+        if(id !== null){
             if(e.target.getAttribute("data-isMine") === "true"){
                 dispatch(setMineActiveId(e.target.getAttribute("data-id")))
             } else{

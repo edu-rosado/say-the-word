@@ -6,6 +6,8 @@ import {useDispatch, useSelector} from 'react-redux'
 import { disconnectFromSocket, logoutUser } from '../../../actions/userActions'
 import { LOCAL_STORAGE_KEY } from '../../App'
 import { useHistory } from 'react-router-dom'
+import { logoutGames } from '../../../actions/gameActions'
+import { logoutContactsFriends } from '../../../actions/ContactsFriendsActions'
 
 export const GAMES_KEY = "GAMES"
 export const CONTACTS_KEY = "CONTACTS"
@@ -22,6 +24,8 @@ export default function Sidebar() {
     const handleLogout = ()=>{
         dispatch(disconnectFromSocket(socket))
         dispatch(logoutUser())
+        dispatch(logoutGames())
+        dispatch(logoutContactsFriends())
         localStorage.removeItem(LOCAL_STORAGE_KEY)
         history.push("/")
     }

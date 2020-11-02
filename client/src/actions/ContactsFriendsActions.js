@@ -1,6 +1,6 @@
 import axios from 'axios'
 import { getTokenConfig } from './aux'
-import { ADD_FRIEND, GET_FRIENDS, GET_ONLINE_CONTACTS } from './types'
+import { ADD_FRIEND, GET_FRIENDS, GET_ONLINE_CONTACTS, LOGOUT_CONTACTS, LOGOUT_CONTACTS_FRIENDS, LOGOUT_FRIENDS } from './types'
 
 export const getOnlineContacts = (token) => async dispatch =>{
     const config = getTokenConfig(token)
@@ -39,4 +39,13 @@ export const addFriend = (token, selectedValue, field) => async dispatch =>{
         }).catch((error)=>{
             return error
         })
+}
+
+export const logoutContactsFriends = () => dispatch =>{
+    dispatch( {
+        type: LOGOUT_CONTACTS,
+    })
+    dispatch( {
+        type: LOGOUT_FRIENDS,
+    })
 }

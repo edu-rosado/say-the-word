@@ -8,7 +8,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { useEffect } from 'react';
 import { getTokenConfig } from '../../actions/aux';
 import { createSocket } from '../../actions/userActions';
-import { storeMessage } from '../../actions/gameActions';
+import { addParticipant, gainPoint, storeMessage } from '../../actions/gameActions';
 
 export default function Dashboard() {
 
@@ -32,8 +32,25 @@ export default function Dashboard() {
 
     useEffect(() => {
         if (socket !== null){
+            socket.on("newParticipant",({username, gameId}) =>{
+                dispatch(addParticipant(username, gameId))
+                const msg = {
+                    text: `'${username}' has joined the game`,
+                    author: "",
+                    date: new Date().toString(),
+                }
+                console.log(msg)
+                console.log("joined: ",username, gameId)
+                dispatch(storeMessage(msg, gameId))
+            })
             socket.on("message",({gameId,msg}) =>{
                 dispatch(storeMessage(msg, gameId))
+            })
+            socket.on("pointInfo",({gameId,msg, winner}) =>{
+                dispatch(storeMessage(msg, gameId))
+                if (winner === username){
+                    dispatch(gainPoint(gameId, username))
+                }
             })
         }
     }, [socket])

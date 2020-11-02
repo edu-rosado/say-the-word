@@ -9,7 +9,6 @@ const authRouter = require("./routes/auth")
 const contactsRouter = require("./routes/contacts")
 const friendsRouter = require("./routes/friends")
 const gamesRouter = require("./routes/games")
-const wordsRouter = require("./routes/words")
 
 mongoose.connect(process.env.DB_URI,
     { 
@@ -27,7 +26,6 @@ app.use("/api/auth", authRouter)
 app.use("/api/friends", friendsRouter)
 app.use("/api/contacts", contactsRouter)
 app.use("/api/games", gamesRouter)
-app.use("/api/words", wordsRouter)
 
 app.listen(process.env.PORT || 5000);
 
@@ -50,6 +48,8 @@ async function myFunc(){
         participants: ["111111","222222"],
         maxParticipants: 3,
         messages: [],
+        targetWords: {"111111":null, "222222":null},
+        points: {"111111":0, "222222":0},
     })
     await g1.save()
 
@@ -99,24 +99,23 @@ function setUpSocket(){
         await user.save()
 
         socket.on("join", async (gameId)=>{
-            // console.log(111, gameId, username)
-            // console.log(Object.keys(socket.rooms))
             const game = await Game.findOne({_id: gameId})
-            if (game){
+            console.log(Object.keys(socket.rooms))
+            console.log(gameId)
+            if (game && (!Object.keys(socket.rooms).includes(gameId))){
+                console.log("joining\n")
                 socket.join(gameId)
-                socket.to(gameId).emit("newParticipant", username)
-                socket.emit("joinAck","All good")
-            } else{
-                socket.emit("joinAck","Requested game does not exist")
-                console.log("nope")
-            }
-            // console.log(222, gameId, username)
-            // console.log(Object.keys(socket.rooms))
-
+                socket.to(gameId).emit("newParticipant", {username, gameId})
+            } 
         })
 
         socket.on("message", ({gameId, msg}) =>{
             socket.to(gameId).emit("message",{gameId, msg})
+        })
+        
+        socket.on("concedePoint", ({gameId,msg,winner}) =>{
+            console.log(msg)
+            io.in(gameId).emit("pointInfo",{gameId,msg,winner})
         })
 
         socket.on("disconnect", async (reason)=>{
