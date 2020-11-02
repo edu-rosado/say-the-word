@@ -4,6 +4,7 @@ if (process.env.NODE_ENV !== "production"){
 const express = require("express");
 const app = express();
 const mongoose = require("mongoose")
+const path = require("path")
 // Routers
 const authRouter = require("./routes/auth")
 const contactsRouter = require("./routes/contacts")
@@ -26,6 +27,13 @@ app.use("/api/auth", authRouter)
 app.use("/api/friends", friendsRouter)
 app.use("/api/contacts", contactsRouter)
 app.use("/api/games", gamesRouter)
+
+if (process.env.NODE__ENV === "production"){
+    app.use(express.static("client/build"))
+    app.get("*", (req,res) => {
+        res.sendFile(path.resolve(__dirname, "client","build", "index.html"))
+    })
+}
 
 app.listen(process.env.PORT || 5000);
 
@@ -143,6 +151,7 @@ function setUpSocket(){
 }
 
 // Cargar los datos de prueba antes de aceptar conexiones ws
-myFunc().then(()=> setUpSocket())
+// myFunc().then(()=> setUpSocket())
 
+setUpSocket()
 
