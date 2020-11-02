@@ -3,8 +3,12 @@ if (process.env.NODE_ENV !== "production"){
 }
 const express = require("express");
 const app = express();
-const mongoose = require("mongoose")
+const server = require("http").Server(app)
+const io = require("socket.io")(server)
 const path = require("path")
+
+const mongoose = require("mongoose")
+
 // Routers
 const authRouter = require("./routes/auth")
 const contactsRouter = require("./routes/contacts")
@@ -35,7 +39,7 @@ if (process.env.NODE_ENV === "production"){
     })
 }
 
-app.listen(process.env.PORT || 5000);
+server.listen(process.env.PORT || 5000);
 
 const User = require("./models/User");
 const Game = require("./models/Game");
@@ -96,7 +100,6 @@ async function myFunc(){
 }
 
 function setUpSocket(){
-    const io = require("socket.io")(5001)
     io.on("connection", async socket =>{
         const {username} = socket.handshake.query
         let user = await User.findOne({username})
