@@ -65,8 +65,10 @@ export const logoutUser = () => {
 }
 
 export const createSocket = (username) =>{
-    const socket = io('https://say-the-word.herokuapp.com:5001',
-    {query: {username,}, secure: true})
+    const socketURL = (process.env.NODE_ENV === 'production'
+        ? window.location.hostname
+        : 'https://localhost:5001')
+    const socket = io.connect(socketURL, {query: {username,}, secure: true})
     return {
         type: CONNECT_SOCKET,
         payload: socket
