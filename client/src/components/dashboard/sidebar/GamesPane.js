@@ -14,7 +14,7 @@ export const ALL_GAMES_KEY = "ALL_GAMES_KEY"
 export default function GamesPane({parentActiveKey}) {
     
     const [activeKey, setActiveKey] = useState(ALL_GAMES_KEY)
-    const [modalIsOpen, setModalIsOpen] = useState(true)
+    const [modalIsOpen, setModalIsOpen] = useState(false)
 
     const {token, username} = useSelector(state => state.user)
     const {myGames, notMyGames} = useSelector(state => state.games)
@@ -77,6 +77,7 @@ export default function GamesPane({parentActiveKey}) {
                             key={game._id}
                             game={game}
                             isGameOfMine={false}
+                            setActiveKey={setActiveKey}
                             />
                         ))}
                     </Tab.Pane>
@@ -102,7 +103,10 @@ export default function GamesPane({parentActiveKey}) {
                 show={modalIsOpen}
                 onHide={()=>setModalIsOpen(false)}
             >
-                <GameModal setActiveKey={setActiveKey}/>
+                <GameModal
+                    setActiveKey={setActiveKey}
+                    setModalIsOpen={setModalIsOpen}
+                />
             </Modal>
                         
         </div>

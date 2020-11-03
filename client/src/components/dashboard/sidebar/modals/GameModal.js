@@ -5,8 +5,11 @@ import { useDispatch, useSelector } from 'react-redux';
 import { createGame, setMineActiveId } from '../../../../actions/gameActions';
 import GameContactSelection from './GameParticipantSelection';
 import {MY_GAMES_KEY} from '../GamesPane'
+import { useHistory } from 'react-router-dom';
 
-export default function GamesModal({setActiveKey}) {
+export default function GamesModal({
+    setActiveKey,setModalIsOpen
+}) {
     const[title, setTitle] = useState("")
     const[hasPassword, setHasPassword] = useState(false)
     const[password, setPassword] = useState("")
@@ -17,6 +20,7 @@ export default function GamesModal({setActiveKey}) {
     
     const token = useSelector(state=> state.user.token)
     const dispatch = useDispatch()
+    const history = useHistory()
 
     async function handleSubmit(e){
         e.preventDefault()
@@ -37,8 +41,12 @@ export default function GamesModal({setActiveKey}) {
                 setAffectedField("maxParticipants")
             }
         } else{
+            setModalIsOpen(false)
             dispatch(setMineActiveId(id))
             setActiveKey(MY_GAMES_KEY)
+            if (window.matchMedia("(max-width: 768px)").matches){
+                history.push("/mobile/chat")
+            }
         }
     }
 

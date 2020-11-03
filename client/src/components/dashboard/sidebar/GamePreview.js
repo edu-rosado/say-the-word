@@ -5,8 +5,11 @@ import { Button } from 'react-bootstrap'
 import { useDispatch, useSelector } from 'react-redux'
 import { useHistory } from 'react-router-dom'
 import { joinLeaveGame, resetMineActiveId } from '../../../actions/gameActions'
+import { MY_GAMES_KEY } from './GamesPane'
 
-export default function GamePreview({game, isGameOfMine}) {
+export default function GamePreview({
+    game, isGameOfMine, setActiveKey
+}) {
     const {
         _id, 
         title, 
@@ -32,6 +35,7 @@ export default function GamePreview({game, isGameOfMine}) {
         }else if (window.matchMedia("(max-width: 768px)").matches){
             history.push("/mobile/chat")
         }
+        setActiveKey(MY_GAMES_KEY)
     }
     const handleLeave = async () =>{
         const error = await dispatch(joinLeaveGame(token, _id, username, "leave"))
