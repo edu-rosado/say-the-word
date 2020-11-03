@@ -125,7 +125,7 @@ function setUpSocket(){
         })
 
         socket.on("message", ({gameId, msg}) =>{
-            console.log(io.sockets.clients(gameId))
+            // console.log(io.sockets.clients(gameId))
             socket.to(gameId).emit("message",{gameId, msg})
         })
         
