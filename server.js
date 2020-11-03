@@ -125,11 +125,11 @@ function setUpSocket(){
         })
 
         socket.on("message", ({gameId, msg}) =>{
+            console.log(io.sockets.clients(gameId))
             socket.to(gameId).emit("message",{gameId, msg})
         })
         
         socket.on("concedePoint", ({gameId,msg,winner}) =>{
-            console.log(msg)
             io.in(gameId).emit("pointInfo",{gameId,msg,winner})
         })
 
