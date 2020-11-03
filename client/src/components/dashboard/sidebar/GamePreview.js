@@ -3,6 +3,7 @@ import { useEffect } from 'react'
 import { useState } from 'react'
 import { Button } from 'react-bootstrap'
 import { useDispatch, useSelector } from 'react-redux'
+import { useHistory } from 'react-router-dom'
 import { joinLeaveGame, resetMineActiveId } from '../../../actions/gameActions'
 
 export default function GamePreview({game, isGameOfMine}) {
@@ -22,11 +23,14 @@ export default function GamePreview({game, isGameOfMine}) {
     const {token, username} = useSelector(state => state.user)
     const {activeMineId,activeNotMineId} = useSelector(state => state.games)
     const dispatch = useDispatch()
+    const history = useHistory()
 
     const handleJoin = async () =>{
         const error = await dispatch(joinLeaveGame(token, _id, username, "join"))
         if (error){
             console.log(error)
+        }else if (window.matchMedia("(max-width: 768px)").matches){
+            history.push("/mobile/chat")
         }
     }
     const handleLeave = async () =>{
@@ -55,7 +59,6 @@ export default function GamePreview({game, isGameOfMine}) {
     return (
         <div 
             className="game-preview-container"
-            // onClick={displayGame}
         >
             <div
                 className="sidebar-item-preview"

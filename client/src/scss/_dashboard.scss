@@ -13,7 +13,7 @@
   }
 
   .m-sidebar {
-    width: 30%;
+    flex-grow: 3;
     border-right: 2px solid rgba(141, 141, 141, 0.5);
     display: flex;
     flex-direction: column;
@@ -101,5 +101,5 @@
 }
 
 .m-chat {
-  width: 70%;
+  flex-grow: 7;
 }

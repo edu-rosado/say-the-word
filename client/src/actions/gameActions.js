@@ -97,7 +97,7 @@ export const sendMessage = (token, gameId, msgText, socket) => async dispatch =>
                     gameId,
                     msg: {
                         author: "",
-                        date: new Date(),
+                        date: "", // To do, format the real date nicely
                         text: `${res.data.loserName} said the word '${res.data.word}' and gave a point to ${res.data.winnerName}`,
                     },
                     winner: res.data.winnerName,

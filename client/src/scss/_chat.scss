@@ -157,3 +157,11 @@
     }
   }
 }
+
+@media screen and (max-width: 768px) {
+  #root,
+  .App,
+  .m-chat {
+    height: 100vh;
+  }
+}

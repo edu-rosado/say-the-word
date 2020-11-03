@@ -1,11 +1,15 @@
-if (process.env.NODE_ENV !== "production"){
-    require("dotenv").config()
-}
 const express = require("express");
 const app = express();
 const server = require("http").Server(app)
-const io = require("socket.io")(server)
 const path = require("path")
+
+let io = null;
+if (process.env.NODE_ENV !== "production"){
+    require("dotenv").config()
+    io = require("socket.io")(5001)
+} else{
+    io = require("socket.io")(server)
+}
 
 const mongoose = require("mongoose")
 
@@ -153,8 +157,11 @@ function setUpSocket(){
     })
 }
 
-// Cargar los datos de prueba antes de aceptar conexiones ws
-// myFunc().then(()=> setUpSocket())
+if (process.env.NODE_ENV === "production"){
+    setUpSocket()
+} else{
+    myFunc().then(() => setUpSocket())
+}
 
-setUpSocket()
+
 

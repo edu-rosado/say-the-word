@@ -9,6 +9,7 @@ import { useEffect } from 'react';
 import { getTokenConfig } from '../../actions/aux';
 import { createSocket } from '../../actions/userActions';
 import { addParticipant, gainPoint, storeMessage } from '../../actions/gameActions';
+import Media from 'react-media';
 
 export default function Dashboard() {
 
@@ -67,7 +68,10 @@ export default function Dashboard() {
         <div className="m-dashboard-container">
             <div className="m-dashboard">
                 <Sidebar/>
-                <Chat/>
+                <Media query="(max-width: 768px)">
+                    {matches => matches ? "" : <Chat/>}
+                </Media>
+                {/* <Chat/> */}
             </div>
         </div>
     )

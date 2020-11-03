@@ -9,6 +9,7 @@ import {Provider as ReduxProvider} from 'react-redux'
 import store from '../store'
 import { useEffect } from 'react';
 import { rehydrateUser } from '../actions/userActions';
+import Chat from './dashboard/chat/Chat';
 
 
 export const LOCAL_STORAGE_KEY = "say-the-word-user"
@@ -24,16 +25,17 @@ function App() {
   },[])
   
   return (
-    <ReduxProvider store={store}>
-    <Router>
-      <div className="App">
-        <Switch>
-          <PrivateRoute path="/chat" component={ChatDashboard} />
-          <RestrictedRoute path="/" component={Landing} />
-        </Switch>
-      </div>
-    </Router>
-    </ReduxProvider>
+<ReduxProvider store={store}>
+<Router>
+  <div className="App">
+    <Switch>
+      <PrivateRoute exact path="/mobile/chat" component={Chat} />
+      <PrivateRoute exact path="/chat" component={ChatDashboard} />
+      <RestrictedRoute path="/" component={Landing} />
+    </Switch>
+  </div>
+</Router>
+</ReduxProvider>
   );
 }
 

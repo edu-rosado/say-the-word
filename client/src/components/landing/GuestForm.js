@@ -5,7 +5,7 @@ import { useHistory } from 'react-router-dom'
 import {loginGuestUser} from '../../actions/userActions'
 
 export default function GuestForm() {
-    const [guestUsername,setGuestUsername] = useState("pinchoplus")
+    const [guestUsername,setGuestUsername] = useState("")
     const [affectedField,setAffectedField] = useState("")
     const [errorMsg,setErrorMsg] = useState("")
     const dispatch = useDispatch()
