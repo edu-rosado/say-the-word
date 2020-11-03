@@ -8,7 +8,7 @@ export default function GameContactSelection({setParticipants}) {
 
     const dispatch = useDispatch()
     const token = useSelector(state => state.user.token)
-    const friends = useSelector(state => state.friends)
+    const friends = useSelector(state => state.user.friends)
 
     useEffect(()=>{
         dispatch(getFriends(token))
@@ -43,7 +43,6 @@ export default function GameContactSelection({setParticipants}) {
     
     return (
         <div className="new-game-contacts">
-            <input className="contacts-input" type="text" placeholder="search NOT IMPLEMENTED..."/>
             <div className="game-participant-container">
                 <div className="game-participant-choice-list" onClick={handleParticipantClick}>
                     {displayFriends()}

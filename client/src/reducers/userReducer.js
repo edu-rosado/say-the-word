@@ -1,4 +1,4 @@
-import {GET_WORD, GUEST_LOGIN, LOGIN, LOGOUT_USER, REGISTER, REHYDRATE_USER} from '../actions/types'
+import {ADD_FRIEND, GET_FRIENDS, GET_WORD, GUEST_LOGIN, LOGIN, LOGOUT_USER, REGISTER, REHYDRATE_USER} from '../actions/types'
 
 const initialState = {
     username: null,
@@ -7,6 +7,7 @@ const initialState = {
     isGuest: true,
     socket: null,
     myWord: null,
+    friends: [],
 }
 
 export default function (state = initialState, action=null){
@@ -30,6 +31,16 @@ export default function (state = initialState, action=null){
                 token,
                 socket,
             }}
+        case GET_FRIENDS:
+            return {
+                ...state,
+                friends: action.payload,
+            }
+        case ADD_FRIEND:
+            return {
+                ...state,
+                friends: [...state.friends, action.payload],
+            }           
         case REHYDRATE_USER:
             return action.payload
         case LOGOUT_USER:

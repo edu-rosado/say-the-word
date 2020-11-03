@@ -14,7 +14,7 @@ export default function ContactsPane({parentActiveKey}) {
     const [modalIsOpen, setModalIsOpen] = useState(false)
 
     const onlineContacts = useSelector(state => state.contacts.online)
-    const friends = useSelector(state => state.friends)
+    const friends = useSelector(state => state.user.friends)
     const {token, username} = useSelector(state => state.user)
     const dispatch = useDispatch()
 

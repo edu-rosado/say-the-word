@@ -8,13 +8,13 @@ import GamePreview from './GamePreview'
 import GameModal from './modals/GameModal'
 import { GAMES_KEY } from './Sidebar'
 
-const MY_GAMES_KEY = "MY_GAMES_KEY"
-const ALL_GAMES_KEY = "ALL_GAMES_KEY"
+export const MY_GAMES_KEY = "MY_GAMES_KEY"
+export const ALL_GAMES_KEY = "ALL_GAMES_KEY"
 
 export default function GamesPane({parentActiveKey}) {
     
     const [activeKey, setActiveKey] = useState(ALL_GAMES_KEY)
-    const [modalIsOpen, setModalIsOpen] = useState(false)
+    const [modalIsOpen, setModalIsOpen] = useState(true)
 
     const {token, username} = useSelector(state => state.user)
     const {myGames, notMyGames} = useSelector(state => state.games)
@@ -97,8 +97,12 @@ export default function GamesPane({parentActiveKey}) {
 
             </div>
 
-            <Modal className="game-modal" show={modalIsOpen} onHide={()=>setModalIsOpen(false)}>
-                <GameModal/>
+            <Modal
+                className="game-modal"
+                show={modalIsOpen}
+                onHide={()=>setModalIsOpen(false)}
+            >
+                <GameModal setActiveKey={setActiveKey}/>
             </Modal>
                         
         </div>

@@ -1,35 +1,26 @@
 import React from 'react'
-import { useEffect } from 'react';
 import { useState } from 'react';
 import { Button, Form, Modal } from "react-bootstrap";
 import { useDispatch, useSelector } from 'react-redux';
-import { createGame } from '../../../../actions/gameActions';
+import { createGame, setMineActiveId } from '../../../../actions/gameActions';
 import GameContactSelection from './GameParticipantSelection';
+import {MY_GAMES_KEY} from '../GamesPane'
 
-export default function GamesModal() {
+export default function GamesModal({setActiveKey}) {
     const[title, setTitle] = useState("")
     const[hasPassword, setHasPassword] = useState(false)
     const[password, setPassword] = useState("")
     const[participants, setParticipants] = useState([])
-    const[maxParticipants, setMaxParticipants] = useState(1)
+    const[maxParticipants, setMaxParticipants] = useState(2)
     const [affectedField, setAffectedField] = useState("")
     const [errorMsg, setErrorMsg] = useState("")
     
     const token = useSelector(state=> state.user.token)
     const dispatch = useDispatch()
 
-    useEffect(()=>{
-        const minValue = Math.max(2, participants.length+1)
-        if (maxParticipants < minValue){ // TODO: change to take on account the num of friends selected
-            setMaxParticipants(minValue)
-        } else if (maxParticipants > 10){
-            setMaxParticipants(10)
-        }
-    },[maxParticipants, participants])
-
     async function handleSubmit(e){
         e.preventDefault()
-        const error = await dispatch(
+        let {id, error} = await dispatch(
             createGame(token, {
                 title, hasPassword, password, participants, maxParticipants
             }))
@@ -39,11 +30,15 @@ export default function GamesModal() {
             if (error.indexOf("title") >= 0) {
                 setAffectedField("title")
             }
-            else {
+            else if (error.indexOf("password") >= 0) {
                 setAffectedField("password")
+            } else{
+                error = error.replace('"maxParticipants"', "Max. participants number")
+                setAffectedField("maxParticipants")
             }
         } else{
-            // push to the game utl
+            dispatch(setMineActiveId(id))
+            setActiveKey(MY_GAMES_KEY)
         }
     }
 
@@ -76,8 +71,11 @@ export default function GamesModal() {
                     <GameContactSelection setParticipants={setParticipants}/>
                 </Form.Group>
                 <Form.Group  controlId="maxParticipants" className="number-of-participants">
-                    <Form.Label>Maximum number of participants</Form.Label>
+                    <Form.Label>Maximum number of participants (2 to 10)</Form.Label>
                     <Form.Control type="number" value={maxParticipants} onChange={(e)=> setMaxParticipants(e.target.value)}/>
+                    {affectedField === "maxParticipants" ?
+                            (<span className="text-danger"> {errorMsg} </span>)
+                        : ""}  
                 </Form.Group>
 
                 <Button type="submit" onSubmit={handleSubmit}>Create game</Button>

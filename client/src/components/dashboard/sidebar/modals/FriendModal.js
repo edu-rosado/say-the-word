@@ -35,6 +35,7 @@ export default function GamesModal({setModalIsOpen}) {
         e.preventDefault()
         const error = await dispatch(addFriend(token, valueToSend, activeBtn))
         if (error){
+            console.log(error)
             setErrorMessage(error.response.data)
         } else{
             setAddFriendSuccess(true)

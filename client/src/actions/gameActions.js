@@ -10,9 +10,9 @@ export const createGame = (token,gameData) => async dispatch =>{
                 type: CREATE_GAME,
                 payload: res.data
             })
-            return null
+            return {id: res.data._id}
         }).catch(e=>{
-            return e.response.data.errorMsg
+            return {error: e.response.data.errorMsg}
         })
 }
 
