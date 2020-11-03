@@ -188,7 +188,7 @@ router.post("/:gameId/messages", verifyToken, async (req,res)=>{
         let word = null
         Object.entries(game.targetWords).forEach(
             ([username, targetWord]) =>{
-                if (req.body.text.indexOf(targetWord) > -1){
+                if (req.body.text.toLowerCase().indexOf(targetWord) > -1){
                     if (username === req.user.username){
                         console.log("trampa!")
                     } else{

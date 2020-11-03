@@ -2,9 +2,9 @@ const Joi = require("joi")
 const User = require("./models/User")
 
 const userRegisterSchema = Joi.object({
-    username: Joi.string().min(6).max(255).required(),
-    email: Joi.string().min(6).max(255).required().email(),
-    password: Joi.string().min(6).max(1023).required(),
+    username: Joi.string().min(3).max(255).required(),
+    email: Joi.string().max(255).required().email(),
+    password: Joi.string().min(3).max(1023).required(),
     friends: Joi.array(),
 })
 const validateRegister = data =>{
