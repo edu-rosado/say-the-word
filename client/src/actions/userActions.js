@@ -1,7 +1,7 @@
-import {CONNECT_SOCKET, GUEST_LOGIN, LOGIN, LOGOUT_USER, REGISTER, REHYDRATE_USER,DISCONNECT_SOCKET} from './types'
+import {CONNECT_SOCKET, GUEST_LOGIN, LOGIN, LOGOUT_USER, REGISTER, REHYDRATE_USER,DISCONNECT_SOCKET, GET_WORD} from './types'
 import axios from 'axios'
 import io from 'socket.io-client'
-import {getTokenPayload} from './aux'
+import {getTokenConfig, getTokenPayload} from './aux'
 
 export const registerUser = (formData) => async dispatch =>{
     return await axios.post("/api/auth/register", formData)
@@ -84,4 +84,19 @@ export const disconnectFromSocket = (socket) =>{
         type: DISCONNECT_SOCKET,
         payload: socket
     }
+}
+
+export const getWord = (token, gameId) => async dispatch =>{
+    const config = getTokenConfig(token)
+    return await axios.get(`/api/games/${gameId}/new-word`, config)
+        .then(res => {
+            dispatch({
+                type: GET_WORD,
+                payload: res.data.word
+            })
+            return null
+        })
+        .catch(err => {
+            return err.response.data.errorMessage
+        })
 }

@@ -27,3 +27,5 @@ export const RESET_MINE_ACTIVE_ID = "RESET_MINE_ACTIVE_ID"
 export const SEND_MESSAGE = "SEND_MESSAGE"
 export const GAIN_POINT = "GAIN_POINT"
 export const LOGOUT_GAMES = "LOGOUT_GAMES"
+
+export const GET_WORD = "GET_WORD"

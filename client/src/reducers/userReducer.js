@@ -1,4 +1,4 @@
-import {GUEST_LOGIN, LOGIN, LOGOUT_USER, REGISTER, REHYDRATE_USER} from '../actions/types'
+import {GET_WORD, GUEST_LOGIN, LOGIN, LOGOUT_USER, REGISTER, REHYDRATE_USER} from '../actions/types'
 
 const initialState = {
     username: null,
@@ -6,6 +6,7 @@ const initialState = {
     token: null,
     isGuest: true,
     socket: null,
+    myWord: null,
 }
 
 export default function (state = initialState, action=null){
@@ -33,6 +34,11 @@ export default function (state = initialState, action=null){
             return action.payload
         case LOGOUT_USER:
             return initialState;
+        case GET_WORD:
+            return {
+                ...state,
+                myWord: action.payload,
+            }
         default: return state;
     }
 }

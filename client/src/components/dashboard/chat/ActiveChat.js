@@ -7,13 +7,13 @@ import { Button, Form, InputGroup } from 'react-bootstrap'
 import { useDispatch, useSelector } from 'react-redux'
 import { getTokenConfig } from '../../../actions/aux'
 import { sendMessage } from '../../../actions/gameActions'
+import { getWord } from '../../../actions/userActions'
 import Message from './Message'
 
 const SKIP_SECONDS = 10
 
 export default function ActiveChat() {
 
-    const [myWord, setmyWord] = useState(null)
     const [time, setTime] = useState("00:00")
     const [remainingseconds, setremainingseconds] = useState(0)
     const [intervalId, setintervalId] = useState(null)
@@ -26,7 +26,7 @@ export default function ActiveChat() {
 
     const {myGames,activeMineId}  = useSelector(state => state.games)
     const socket  = useSelector(state => state.socket)
-    const {token, username}  = useSelector(state => state.user)
+    const {token, username, myWord}  = useSelector(state => state.user)
     const dispatch = useDispatch()
 
     const messagesEndRef = useRef()
@@ -35,11 +35,12 @@ export default function ActiveChat() {
     }
 
     useEffect(()=>{
-        console.log("activeGame changed")
-        console.log(activeGame._id !== null && Object.keys(activeGame.points).includes(username))
         if (activeGame._id !== null && Object.keys(activeGame.points).includes(username)){
             setPoints(activeGame.points[username])
-            scrollToBottom()          
+            scrollToBottom()
+            if (myWord === null){
+                dispatch(getWord(token, activeGame._id))
+            }
         }
     },[activeGame])
 
@@ -78,18 +79,8 @@ export default function ActiveChat() {
         setintervalId(intv)
     }
 
-    const getWord = async() =>{
-        const config = getTokenConfig(token)
-        console.log(`/api/games/${activeGame._id}/new-word`)
-        return await Axios.get(`/api/games/${activeGame._id}/new-word`, config)
-            .then(res => {
-                setmyWord(res.data.word)
-                return null
-            })
-            .catch(err => err.response.data.errorMessage)
-    }
     const handleSkip = async () =>{
-        const error = await getWord()
+        const error = await dispatch(getWord(token, activeGame._id))
         if (error !== null){
             console.log(error)
         }
@@ -122,7 +113,7 @@ export default function ActiveChat() {
             <div className="points-box">
                 <p>Points</p> <p className="points-num">{points}</p>
             </div>
-            <i class="fas fa-address-book"></i>
+            <i className="fas fa-address-book"></i>
         </div>
         <div className="word-container">
             <div className="word-box">
@@ -164,7 +155,7 @@ export default function ActiveChat() {
                 ></Form.Control>
                 <InputGroup.Append>
                     <Button onClick={handleSubmit}>
-                        <i class="fas fa-paper-plane"></i>
+                        <i className="fas fa-paper-plane"></i>
                     </Button>
                 </InputGroup.Append>
             </InputGroup>
