@@ -8,10 +8,17 @@ import { useDispatch, useSelector } from 'react-redux';
 import { useEffect } from 'react';
 import { getTokenConfig } from '../../actions/aux';
 import { createSocket } from '../../actions/userActions';
-import { addParticipant, gainPoint, storeMessage } from '../../actions/gameActions';
+import { addParticipant, endGame, gainPoint, startGame, storeMessage, storeRole } from '../../actions/gameActions';
 import Media from 'react-media';
+import { useState } from 'react';
+import { set } from 'lodash';
 
 export default function Dashboard() {
+
+    // socket would get initialized several times if we 
+    // don't explicitly control it with a boolean
+    // (for example when popping from history)
+    const [socketInitialized, setSocketInitialized] = useState(true)
 
     const {username, token} = useSelector(state => state.user)
     const myGames = useSelector(state => state.games.myGames)
@@ -20,11 +27,13 @@ export default function Dashboard() {
     const dispatch = useDispatch();
 
     useEffect(()=>{
-        // Push to login if token is invalid, else connect socket
         const config = getTokenConfig(token)
         Axios.get("api/auth/verify-token",config)
             .then(() => {
-                dispatch(createSocket(username))
+                if (socket === null){
+                    setSocketInitialized(false)
+                    dispatch(createSocket(username))
+                }
             })
             .catch(err => {
                 history.push("/")
@@ -32,7 +41,8 @@ export default function Dashboard() {
     },[])
 
     useEffect(() => {
-        if (socket !== null){
+        if (socket !== null && !socketInitialized){
+            setSocketInitialized(true)
             socket.on("newParticipant",({username, gameId}) =>{
                 dispatch(addParticipant(username, gameId))
                 const msg = {
@@ -40,8 +50,6 @@ export default function Dashboard() {
                     author: "",
                     date: new Date().toString(),
                 }
-                console.log(msg)
-                console.log("joined: ",username, gameId)
                 dispatch(storeMessage(msg, gameId))
             })
             socket.on("message",({gameId,msg}) =>{
@@ -52,6 +60,18 @@ export default function Dashboard() {
                 if (winner === username){
                     dispatch(gainPoint(gameId, username))
                 }
+            })
+            socket.on("gameStarted",({gameId}) => {
+                dispatch(startGame(gameId))
+                socket.emit("getRole", {gameId})
+            })
+            socket.on("getRole",({gameId, role, impostorFriend}) => {
+                dispatch(storeRole(gameId, username, role, impostorFriend))
+            })
+            socket.on("gameEnd", ({
+                gameId, votes, points, roles, nominates
+            }) => {
+                dispatch(endGame(gameId, votes, points, roles, nominates))
             })
         }
     }, [socket])

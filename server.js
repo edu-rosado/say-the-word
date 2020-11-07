@@ -2,6 +2,7 @@ const express = require("express");
 const app = express();
 const server = require("http").Server(app)
 const path = require("path")
+const {GAME_STATUS_WAITING, GAME_STATUS_GOING} = require("./common")
 
 let io = null;
 if (process.env.NODE_ENV !== "production"){
@@ -48,24 +49,46 @@ server.listen(process.env.PORT || 5000);
 const User = require("./models/User");
 const Game = require("./models/Game");
 
-
-// Flush DB for dev purporses. TODO: Remove
-User.deleteMany({},()=>{})
-Game.deleteMany({},()=>{console.log("Flushed DB")})
-
+// Fake data for dev purporses
 async function myFunc(){
+    User.deleteMany({},()=>{})
+    Game.deleteMany({},()=>{console.log("Flushed DB")})
     const bcrypt = require("bcryptjs")
     const salt = await bcrypt.genSalt(10)
 
+    // const g1 = await new Game({
+    //     title: "game 1",
+    //     hasPassword: false,
+    //     password: "no_password",
+    //     participants: ["111111","222222","333333","444444"],
+    //     maxParticipants: 5,
+    //     messages: [],
+    //     roles: {"111111":null, "222222":null, "333333":null, "444444":null},
+    //     points: {"111111":0, "222222":0, "333333":0, "444444":0},
+    //     host: "111111",
+    //     votes: {"111111":[],"222222":[],"333333":[],"444444":[]},
+    //     status: GAME_STATUS_WAITING,
+    // })
     const g1 = await new Game({
         title: "game 1",
         hasPassword: false,
         password: "no_password",
-        participants: ["111111","222222"],
-        maxParticipants: 3,
+        participants: ["111111","222222","333333","444444"],
+        maxParticipants: 5,
         messages: [],
-        targetWords: {"111111":null, "222222":null},
-        points: {"111111":0, "222222":0},
+        roles: {
+            "111111":"true self",
+            "222222":"true self",
+            "333333":"impostor",
+            "444444":"impostor"
+        },
+        points: {"111111":0, "222222":0, "333333":0, "444444":0},
+        host: "111111",
+        votes: {
+            "111111":[],
+            "222222":["333333","444444"]
+        },
+        status: GAME_STATUS_GOING,
     })
     await g1.save()
 
@@ -76,7 +99,7 @@ async function myFunc(){
         isGuest: false,
         isOnline: true,
         friends: [],
-        games: [g1],
+        games: [g1._id],
     })
     await u2.save()
     const u3 = new User({
@@ -86,9 +109,19 @@ async function myFunc(){
         isGuest: false,
         isOnline: true,
         friends: [],
-        games: [],
+        games: [g1._id],
     })
     await u3.save()
+    const u4 = new User({
+        username: "444444",
+        email: "4@1.com",
+        password:  await bcrypt.hash("111111", salt),
+        isGuest: false,
+        isOnline: true,
+        friends: [],
+        games: [g1._id],
+    })
+    await u4.save()
 
     const u1 = new User({
         username: "111111",
@@ -97,7 +130,7 @@ async function myFunc(){
         isGuest: false,
         isOnline: true,
         friends: [u2.username, u3.username],
-        games: [g1],
+        games: [g1._id],
     })
     await u1.save()
     console.log("g1: ", g1._id)
@@ -115,22 +148,46 @@ function setUpSocket(){
 
         socket.on("join", async (gameId)=>{
             const game = await Game.findOne({_id: gameId})
-            console.log(Object.keys(socket.rooms))
-            console.log(gameId)
             if (game && (!Object.keys(socket.rooms).includes(gameId))){
-                console.log("joining\n")
                 socket.join(gameId)
                 socket.to(gameId).emit("newParticipant", {username, gameId})
             } 
         })
 
         socket.on("message", ({gameId, msg}) =>{
-            // console.log(io.sockets.clients(gameId))
             socket.to(gameId).emit("message",{gameId, msg})
         })
-        
-        socket.on("concedePoint", ({gameId,msg,winner}) =>{
-            io.in(gameId).emit("pointInfo",{gameId,msg,winner})
+
+        socket.on("gameStarted", async ({gameId}) =>{
+            socket.to(gameId).emit("gameStarted",{gameId})
+        })
+        socket.on("getRole", async ({gameId}) => {
+            const game = await Game.findOne({_id: gameId})
+            const role = game.roles[username]
+            let impostorFriend = null
+            if (role === "impostor"){
+                impostorFriend = Object
+                    .entries(game.roles)
+                    .filter(([name,nameRole]) =>(
+                        (name !== username) &&
+                        nameRole === "impostor"
+                    ))[0][0]
+            }
+            socket.to(gameId).emit("getRole", {
+                role,
+                impostorFriend,
+                gameId,
+            })
+        })
+        socket.on("gameEnd", async ({gameId, nominates}) => {
+            const game = await Game.findOne({_id: gameId})
+            socket.to(gameId).emit("gameEnd", {
+                gameId,
+                votes: game.votes,
+                roles: game.roles,
+                points: game.points,
+                nominates,
+            })
         })
 
         socket.on("disconnect", async (reason)=>{
@@ -162,6 +219,4 @@ if (process.env.NODE_ENV === "production"){
 } else{
     myFunc().then(() => setUpSocket())
 }
-
-
 

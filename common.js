@@ -1,3 +1,7 @@
+const GAME_STATUS_WAITING = "GAME_STATUS_WAITING"
+const GAME_STATUS_GOING = "GAME_STATUS_GOING"
+const GAME_STATUS_ENDED = "GAME_STATUS_ENDED"
+
 const jwt = require("jsonwebtoken")
 
 const jwtSignToHeader = (data, response)=>{
@@ -33,9 +37,22 @@ const handleValidationErrors = (response, validationRes)=>{
     return null
 }
 
+function shuffleArray(originalArray) {
+    const array = [...originalArray] // Copy
+    for (let i = array.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [array[i], array[j]] = [array[j], array[i]];
+    }
+    return array
+}
+
 
 module.exports = {
     jwtSignToHeader,
     verifyToken,
     handleValidationErrors,
+    GAME_STATUS_WAITING,
+    GAME_STATUS_GOING,
+    GAME_STATUS_ENDED,
+    shuffleArray
 }

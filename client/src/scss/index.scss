@@ -81,12 +81,9 @@
     border: 1px solid rgb(5, 255, 242);
     transform: scaleY(0.98);
   }
-  &.sticky {
+  &.active {
     border: 1px solid rgb(5, 255, 242);
     background-color: rgba(140, 238, 255, 0.644);
-  }
-  &.single {
-    //TODO
   }
 
   h3 {

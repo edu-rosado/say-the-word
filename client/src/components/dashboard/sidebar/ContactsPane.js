@@ -48,7 +48,7 @@ export default function ContactsPane({parentActiveKey}) {
                             <ContactPreview 
                             key={contact}
                             name={contact}
-                            activeClass="single"
+                            selectedItems={[]}
                             />
                         ))}
                     </Tab.Pane>
@@ -57,7 +57,7 @@ export default function ContactsPane({parentActiveKey}) {
                             <ContactPreview 
                             key={friend}
                             name={friend}
-                            activeClass="single"
+                            selectedItems={[]}
                             />
                         ))}
                     </Tab.Pane>

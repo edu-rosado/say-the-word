@@ -85,18 +85,3 @@ export const disconnectFromSocket = (socket) =>{
         payload: socket
     }
 }
-
-export const getWord = (token, gameId) => async dispatch =>{
-    const config = getTokenConfig(token)
-    return await axios.get(`/api/games/${gameId}/new-word`, config)
-        .then(res => {
-            dispatch({
-                type: GET_WORD,
-                payload: res.data.word
-            })
-            return null
-        })
-        .catch(err => {
-            return err.response.data.errorMessage
-        })
-}

@@ -14,7 +14,7 @@ export default function GamesModal({
     const[hasPassword, setHasPassword] = useState(false)
     const[password, setPassword] = useState("")
     const[participants, setParticipants] = useState([])
-    const[maxParticipants, setMaxParticipants] = useState(2)
+    const[maxParticipants, setMaxParticipants] = useState(4)
     const [affectedField, setAffectedField] = useState("")
     const [errorMsg, setErrorMsg] = useState("")
     
@@ -76,7 +76,10 @@ export default function GamesModal({
                 </div>
                 <Form.Group controlId="numOfFriends" >
                     <Form.Label>Invite friends</Form.Label>
-                    <GameContactSelection setParticipants={setParticipants}/>
+                    <GameContactSelection 
+                        setParticipants={setParticipants}
+                        participants={participants}
+                    />
                 </Form.Group>
                 <Form.Group  controlId="maxParticipants" className="number-of-participants">
                     <Form.Label>Maximum number of participants (2 to 10)</Form.Label>

@@ -1,7 +1,7 @@
 import React, { useEffect } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 import { setMineActiveId } from '../../../actions/gameActions'
-import ActiveChat from './ActiveChat'
+import ActiveChat from './activeChat/ActiveChat'
 import InactiveChat from './InactiveChat'
 
 

@@ -1,16 +1,21 @@
-import Axios from 'axios'
 import React from 'react'
 import { useRef } from 'react'
 import { useEffect } from 'react'
 import { useState } from 'react'
 import { Button, Form, InputGroup } from 'react-bootstrap'
 import { useDispatch, useSelector } from 'react-redux'
-import { getTokenConfig } from '../../../actions/aux'
-import { sendMessage } from '../../../actions/gameActions'
-import { getWord } from '../../../actions/userActions'
-import Message from './Message'
+import { sendMessage } from '../../../../actions/gameActions'
+import Message from '../Message'
+import IngameBar from './multiInfoBar/IngameBar'
+import PostgameBar from './multiInfoBar/PostgameBar'
+import PostgameBar_host from './multiInfoBar/PostgameBar'
+import StartBar from './multiInfoBar/StartBar'
+import StartBar_host from './multiInfoBar/StartBar_host'
 
 const SKIP_SECONDS = 10
+export const GAME_STATUS_WAITING = "GAME_STATUS_WAITING"
+export const GAME_STATUS_GOING = "GAME_STATUS_GOING"
+export const GAME_STATUS_ENDED = "GAME_STATUS_ENDED"
 
 export default function ActiveChat() {
 
@@ -23,26 +28,17 @@ export default function ActiveChat() {
             title:"", messages:[], points:{},
     })
     const [points, setPoints] = useState(0)
+    const [multiInfoBar, setMultiInfoBar] = useState(null)
 
     const {myGames,activeMineId}  = useSelector(state => state.games)
     const socket  = useSelector(state => state.socket)
-    const {token, username, myWord}  = useSelector(state => state.user)
+    const {token, username}  = useSelector(state => state.user)
     const dispatch = useDispatch()
 
     const messagesEndRef = useRef()
     const scrollToBottom = ()=>{
         messagesEndRef.current.scrollIntoView({ behavior: 'smooth' })
     }
-
-    useEffect(()=>{
-        if (activeGame._id !== null && Object.keys(activeGame.points).includes(username)){
-            setPoints(activeGame.points[username])
-            scrollToBottom()
-            if (myWord === null){
-                dispatch(getWord(token, activeGame._id))
-            }
-        }
-    },[activeGame])
 
     useEffect(() => {
         if (remainingseconds < 0){
@@ -66,11 +62,42 @@ export default function ActiveChat() {
             const updatedGame = myGames.find(
                 game => game._id === activeMineId
             )
-            setPoints(updatedGame.points[username])
-            scrollToBottom()   
-            setActiveGame(updatedGame)
+            setActiveGame({...updatedGame})
         }
     }, [activeMineId, myGames])
+
+    useEffect(() => {
+        if (activeGame._id === null){
+            return
+        }
+        setPoints(activeGame.points[username])
+        scrollToBottom()
+        switch(activeGame.status){
+            case GAME_STATUS_WAITING:
+                if (activeGame.host === username){
+                    setMultiInfoBar(<StartBar_host          
+                        gameId={activeGame._id}
+                        setMultiInfoBar={setMultiInfoBar}
+                    />)
+                } else{
+                    setMultiInfoBar(<StartBar/>)
+                }
+                break
+            case GAME_STATUS_GOING:
+                setMultiInfoBar(<IngameBar
+                    activeGame={activeGame}
+                    setMultiInfoBar={setMultiInfoBar}
+                />)
+                break
+            case GAME_STATUS_ENDED:
+                setMultiInfoBar(<PostgameBar
+                    activeGame={activeGame}
+                />)
+                break
+            default:
+                break
+        }
+    }, [activeGame])
     
     const startTimer = ()=>{
         let intv = setInterval(() => {
@@ -80,10 +107,6 @@ export default function ActiveChat() {
     }
 
     const handleSkip = async () =>{
-        const error = await dispatch(getWord(token, activeGame._id))
-        if (error !== null){
-            console.log(error)
-        }
         setdisableSkip(true)
         setremainingseconds(SKIP_SECONDS)
         startTimer()
@@ -91,7 +114,11 @@ export default function ActiveChat() {
     }
     const handleSubmit = async () => {
         const error = await dispatch(sendMessage(
-            token, activeGame._id, inputMsg, socket
+            token,
+            activeGame._id,
+            inputMsg,
+            socket,
+            activeGame.role === "impostor"
         ))
         if (error){
             console.log(error.response.data)
@@ -115,21 +142,7 @@ export default function ActiveChat() {
             </div>
             <i className="fas fa-address-book"></i>
         </div>
-        <div className="word-container">
-            <div className="word-box">
-                <span>Your word: </span>
-                <span className="word">{myWord}</span>
-            </div>
-            <div className="skip-box">
-                <span>Time to skip: </span>
-                <span className="time">{time}</span>
-                <Button
-                    disabled={disableSkip}
-                    className="skip-btn"
-                    onClick={handleSkip}
-                >Skip word</Button>
-            </div>
-        </div>
+        {multiInfoBar}
     </div>
     <div className="messages-container">
         {activeGame.messages.map(msg => (
@@ -139,6 +152,8 @@ export default function ActiveChat() {
                 text={msg.text}
                 date={msg.date}
                 authorIsSelf={msg.author === username}
+                isImpostor={activeGame.role === "impostor"}
+                impostorFriend={activeGame.impostorFriend}
             />
         ))}
         <div ref={messagesEndRef} />

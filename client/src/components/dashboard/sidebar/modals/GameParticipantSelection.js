@@ -4,7 +4,9 @@ import { useDispatch, useSelector } from 'react-redux'
 import { getFriends } from '../../../../actions/ContactsFriendsActions'
 import ContactPreview from '../ContactPreview'
 
-export default function GameContactSelection({setParticipants}) {
+export default function GameContactSelection({
+    participants, setParticipants
+}) {
 
     const dispatch = useDispatch()
     const token = useSelector(state => state.user.token)
@@ -22,7 +24,7 @@ export default function GameContactSelection({setParticipants}) {
                 <ContactPreview
                     key={friendName}
                     name={friendName}
-                    activeClass="sticky"
+                    selectedItems={participants}
                 />
             )))
         }
@@ -30,14 +32,12 @@ export default function GameContactSelection({setParticipants}) {
 
     function handleParticipantClick(e){
         const username = e.target.getAttribute("data-name")
-        if(e.target.getAttribute("data-active") === "true"){
-            // add
-            setParticipants(prev=> [...prev, username])            
-        } else{
-            // remove
+        if(participants.includes(username)){
             setParticipants(prev=> 
                 prev.filter(element => 
                     element !== username))
+        } else{
+            setParticipants(prev=> [...prev, username]) 
         }
     }
     
