@@ -1,7 +1,7 @@
 import axios from 'axios'
 import { GAME_STATUS_ENDED } from '../components/dashboard/chat/activeChat/ActiveChat'
 import {getTokenConfig} from './aux'
-import {ADD_PARTICIPANT, CAST_VOTES, CREATE_GAME, END_GAME, GAIN_POINT, GET_MY_GAMES, GET_NOT_MY_GAMES, JOIN_GAME, LEAVE_GAME, LOGOUT_GAMES, RESET_MINE_ACTIVE_ID, SET_MINE_ACTIVE_ID, SET_NOT_MINE_ACTIVE_ID, START_GAME, STORE_MESSAGE, STORE_ROLE} from './types'
+import {ADD_PARTICIPANT, CAST_VOTES, CREATE_GAME, END_GAME, GAIN_POINT, GET_MY_GAMES, GET_NOT_MY_GAMES, JOIN_FOLLOW_UP, JOIN_GAME, LEAVE_GAME, LOGOUT_GAMES, RESET_MINE_ACTIVE_ID, SET_MINE_ACTIVE_ID, SET_NOT_MINE_ACTIVE_ID, START_GAME, STORE_MESSAGE, STORE_ROLE} from './types'
 
 export const createGame = (token,gameData) => async dispatch =>{
     const config = getTokenConfig(token)
@@ -135,15 +135,12 @@ export const castVotesApi = (token, gameId, socket, votes, username) => async di
         .then(res =>{
             dispatch(castVotes(gameId, votes, username))
             if (res.data.status === GAME_STATUS_ENDED){
-                socket.emit("gameEnd",{
-                    gameId, nominates: res.data.nominates
-                })
+                socket.emit("gameEnd",{gameId})
                 dispatch(endGame(
                     gameId, 
                     res.data.votes, 
                     res.data.points, 
                     res.data.roles, 
-                    res.data.nominates
                 ))
             }
             return null
@@ -163,7 +160,7 @@ export const castVotes = (gameId, votes, username) => {
 export const storeRole = (gameId, username, role, impostorFriend) => {
     return {
         type: STORE_ROLE,
-        payload: {gameId, role,impostorFriend},
+        payload: {gameId, username, role,impostorFriend},
     }
 }
 
@@ -178,6 +175,35 @@ export const gainPoint = (gameId, username) => {
     return {
         type: GAIN_POINT,
         payload: {gameId,username},
+    }
+}
+
+export const joinFollowUpApi = (gameId, username, token, socket) => async dispatch => {
+    const config = getTokenConfig(token)
+    return await axios.put(`/api/games/${gameId}?action=follow-up`, null, config)
+        .then(res =>{
+            dispatch(joinFollowUp(gameId, username))
+            if (res.data.role !== null){
+                dispatch(startGame(gameId))
+                dispatch(storeRole(
+                    gameId,
+                    username,
+                    res.data.role,
+                    res.data.impostorFriend
+                ))
+                socket.emit("gameStarted",{gameId})
+            }
+            return null
+        }).catch(e=>{
+            console.log(e)
+            return e.response.data.errorMessage
+        })
+}
+
+export const joinFollowUp = (gameId, username) => {
+    return {
+        type: JOIN_FOLLOW_UP,
+        payload: {gameId, username},
     }
 }
 

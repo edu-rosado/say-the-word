@@ -3,7 +3,9 @@ import { useRef } from 'react'
 import { useEffect } from 'react'
 import { useState } from 'react'
 import { Button, Form, InputGroup } from 'react-bootstrap'
+import Media from 'react-media'
 import { useDispatch, useSelector } from 'react-redux'
+import { Link } from 'react-router-dom'
 import { sendMessage } from '../../../../actions/gameActions'
 import Message from '../Message'
 import IngameBar from './multiInfoBar/IngameBar'
@@ -70,6 +72,7 @@ export default function ActiveChat() {
         if (activeGame._id === null){
             return
         }
+        console.log(activeGame)
         setPoints(activeGame.points[username])
         scrollToBottom()
         switch(activeGame.status){
@@ -136,11 +139,16 @@ export default function ActiveChat() {
 <div className="m-chat">
     <div className="upper-container">
         <div className="game-info-actions">
+             <Link to="/">
+                <i className="fas fa-arrow-circle-left back"></i>
+             </Link>
             <div className="title"><h3>{activeGame.title}</h3></div>
             <div className="points-box">
                 <p>Points</p> <p className="points-num">{points}</p>
             </div>
-            <i className="fas fa-address-book"></i>
+            <Media query="(max-width: 768px)">
+                <i className="fas fa-ellipsis-v menu"></i>
+            </Media>
         </div>
         {multiInfoBar}
     </div>

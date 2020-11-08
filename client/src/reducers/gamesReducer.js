@@ -1,4 +1,4 @@
-import { ADD_PARTICIPANT, CAST_VOTES, CREATE_GAME, END_GAME, GAIN_POINT, GET_MY_GAMES, GET_NOT_MY_GAMES, JOIN_GAME, LEAVE_GAME, LOGOUT_GAMES, RESET_MINE_ACTIVE_ID, SET_MINE_ACTIVE_ID, SET_NOT_MINE_ACTIVE_ID, START_GAME, STORE_MESSAGE, STORE_ROLE } from "../actions/types";
+import { ADD_PARTICIPANT, CAST_VOTES, CREATE_GAME, END_GAME, GAIN_POINT, GET_MY_GAMES, GET_NOT_MY_GAMES, JOIN_FOLLOW_UP, JOIN_GAME, LEAVE_GAME, LOGOUT_GAMES, RESET_MINE_ACTIVE_ID, SET_MINE_ACTIVE_ID, SET_NOT_MINE_ACTIVE_ID, START_GAME, STORE_MESSAGE, STORE_ROLE } from "../actions/types";
 import { GAME_STATUS_GOING, GAME_STATUS_ENDED } from "../components/dashboard/chat/activeChat/ActiveChat";
 const initialState = {
     myGames:[],
@@ -93,17 +93,25 @@ export default function(state=initialState, action=null){
                     return game
                 })
             }
-        case START_GAME:
-            console.log(state.myGames)
+        case START_GAME:{
             return {
                 ...state, 
                 myGames: state.myGames.map(game =>{
                     if (game._id === action.payload){
                         game.status = GAME_STATUS_GOING
+                        game.votes = Object.assign({},
+                            ...game.participants.map(name => (
+                                {[name]: []}
+                            )))
+                        game.roles = Object.assign({},
+                            ...game.participants.map(name => (
+                                {[name]: null}
+                            )))
                     }
                     return game
                 })
             }
+        }
         case GAIN_POINT:{
             const {gameId, username} = action.payload
             return {
@@ -129,12 +137,12 @@ export default function(state=initialState, action=null){
             }
         }
         case STORE_ROLE:{
-            const {gameId, role, impostorFriend} = action.payload
+            const {gameId, username, role, impostorFriend} = action.payload
             return {
                 ...state,
                 myGames: state.myGames.map(game =>{
                     if (game._id === gameId){
-                        game.role = role
+                        game.roles[username] = role
                         game.impostorFriend = impostorFriend
                     }
                     return game
@@ -142,22 +150,32 @@ export default function(state=initialState, action=null){
             }
         }
         case END_GAME:{
-            const {gameId, votes, points, roles, nominates} = action.payload
+            const {gameId, votes, points, roles} = action.payload
             return {
                 ...state,
                 myGames: state.myGames.map(game =>{
                     if (game._id === gameId){
                         game.status = GAME_STATUS_ENDED
-                        game.allRoles = roles
+                        game.roles = roles
                         game.votes = votes
                         game.points = points
-                        game.nominates = nominates
                     }
                     return game
                 })
             }
         }
-            
+        case JOIN_FOLLOW_UP:{
+            const {gameId, username} = action.payload
+            return {
+                ...state,
+                myGames: state.myGames.map(game =>{
+                    if (game._id === gameId){
+                        game.followingUp[username] = true
+                    }
+                    return game
+                })
+            }
+        }            
         case LOGOUT_GAMES:
             return initialState
         default:

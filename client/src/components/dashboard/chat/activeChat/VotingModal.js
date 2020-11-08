@@ -32,6 +32,8 @@ export default function VotingModal({
         const error = await dispatch(castVotesApi(token, gameId, socket, selectedItems, username))
         if (error !== null){
             console.log(error)
+        } else {
+            setmodalIsOpen(false)
         }
     }
 

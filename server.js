@@ -86,8 +86,9 @@ async function myFunc(){
         host: "111111",
         votes: {
             "111111":[],
-            "222222":["333333","444444"]
+            "222222":["111111","444444"]
         },
+        followingUp: {"111111":false, "222222":false, "333333":false, "444444":false},
         status: GAME_STATUS_GOING,
     })
     await g1.save()
@@ -179,14 +180,13 @@ function setUpSocket(){
                 gameId,
             })
         })
-        socket.on("gameEnd", async ({gameId, nominates}) => {
+        socket.on("gameEnd", async ({gameId}) => {
             const game = await Game.findOne({_id: gameId})
             socket.to(gameId).emit("gameEnd", {
                 gameId,
                 votes: game.votes,
                 roles: game.roles,
                 points: game.points,
-                nominates,
             })
         })
 

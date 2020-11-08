@@ -82,7 +82,7 @@ export default function GamesModal({
                     />
                 </Form.Group>
                 <Form.Group  controlId="maxParticipants" className="number-of-participants">
-                    <Form.Label>Maximum number of participants (2 to 10)</Form.Label>
+                    <Form.Label>Maximum number of participants (4 to 10)</Form.Label>
                     <Form.Control type="number" value={maxParticipants} onChange={(e)=> setMaxParticipants(e.target.value)}/>
                     {affectedField === "maxParticipants" ?
                             (<span className="text-danger"> {errorMsg} </span>)

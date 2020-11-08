@@ -34,7 +34,7 @@ router.post("/", verifyToken, async (req,res)=>{
     participants.push(req.user.username)
 
     // Set min number of participants to the max of (2 and the number of current participants)
-    const minParticipants = Math.max(2, req.body.participants.length)
+    const minParticipants = Math.max(4, participants.length)
 
      // validate fields
      errorResponse = handleValidationErrors(res, validateGame(
@@ -48,18 +48,25 @@ router.post("/", verifyToken, async (req,res)=>{
         ...req.body,
         password,
         messages: [],
-        points: {},
-        roles: {},
-        votes: {},
+        points: Object.assign({},
+            ...participants.map(name => (
+                {[name]: 0}
+            ))),
+        roles: Object.assign({},
+            ...participants.map(name => (
+                {[name]: null}
+            ))),
+        votes: Object.assign({},
+            ...participants.map(name => (
+                {[name]: []}
+            ))),
+        followingUp: Object.assign({},
+            ...participants.map(name => (
+                {[name]: false}
+            ))),
         host: req.user.username,
         status: GAME_STATUS_WAITING,
     })
-    game.points[req.user.username] = 0
-    game.roles[req.user.username] = null
-    game.votes[req.user.username] = []
-    game.markModified("roles")
-    game.markModified("points")
-    game.markModified("votes")
     await game.save()
     const user = await User.findOne({username: req.user.username})
     user.games.push(game._id)
@@ -73,7 +80,8 @@ router.post("/", verifyToken, async (req,res)=>{
         messages: game.messages,        
         points: game.points,  
         host: game.host,  
-        status: game.status,  
+        status: game.status, 
+        followingUp: game.followingUp, 
     })  
 })
 
@@ -94,19 +102,42 @@ router.get("/", verifyToken, async (req,res)=>{
                         nameRole === "impostor"
                     ))[0][0]
             }
-            return {
-                _id: game._id,
-                title: game.title, 
-                hasPassword: game.hasPassword, 
-                maxParticipants: game.maxParticipants,
-                participants: game.participants,
-                messages: game.messages,
-                points: game.points,
-                host: game.host,
-                status: game.status,
-                votes: game.votes,
-                role,
-                impostorFriend,
+            if (game.status === GAME_STATUS_ENDED){
+                return {
+                    _id: game._id,
+                    title: game.title, 
+                    hasPassword: game.hasPassword, 
+                    maxParticipants: game.maxParticipants,
+                    participants: game.participants,
+                    messages: game.messages,
+                    points: game.points,
+                    host: game.host,
+                    status: game.status,
+                    votes: game.votes,
+                    roles: game.roles,
+                    impostorFriend,
+                    followingUp: game.followingUp,
+                }
+            } else {
+                const filteredRoles = {}
+                filteredRoles[req.user.username] = role
+                const filteredVotes = {}
+                filteredVotes[req.user.username] = game.votes[req.user.username]
+                return {
+                    _id: game._id,
+                    title: game.title, 
+                    hasPassword: game.hasPassword, 
+                    maxParticipants: game.maxParticipants,
+                    participants: game.participants,
+                    messages: game.messages,
+                    points: game.points,
+                    host: game.host,
+                    status: game.status,
+                    votes: filteredVotes,
+                    roles: filteredRoles,
+                    impostorFriend,
+                    followingUp: game.followingUp,
+                }
             }
         } else{
             return {
@@ -148,6 +179,9 @@ router.put("/:gameId", verifyToken, async (req,res)=>{
         case "vote":
             ({status, jsonResponse} = await vote(req, user, game))
             break;
+        case "follow-up":
+            ({status, jsonResponse} = await followUp(req, user, game))
+            break;
         default:
             status = 400
             jsonResponse = {errorMessage: "Invalid action for the game endpoint"}
@@ -163,7 +197,7 @@ async function joinGame(req, user, game){
                 errorMessage: "You already are a participant in the requested game"
             },
         }
-    } else if (user.games.status !== GAME_STATUS_WAITING){
+    } else if (game.status !== GAME_STATUS_WAITING){
         return {
             status: 400,
             jsonResponse: {
@@ -178,9 +212,11 @@ async function joinGame(req, user, game){
             game.roles[user.username] = null
             game.points[user.username] = 0
             game.votes[user.username] = []
+            game.followingUp[user.username] = false
             game.markModified("roles")
             game.markModified("points")
             game.markModified("votes")
+            game.markModified("followingUp")
             await game.save()            
             const jsonResponse = {
                 _id: game._id,
@@ -268,37 +304,44 @@ async function startGame(req, user, game){
             }
         } 
     } else{
-        game.status = GAME_STATUS_GOING
-        const newOrder = shuffleArray(game.participants)
-        newOrder.slice(0,2).forEach(name => {
-            game.roles[name] = "impostor"
-            delete game.votes[name]
-        })
-        newOrder.slice(2).forEach(name => {
-            game.roles[name] = "true self"
-        })
+        const {role, impostorFriend} = setUpNewGame(game, user)
         game.markModified("roles")
         game.markModified("votes")
-
         await game.save()
-        const role = game.roles[req.user.username]
-        let impostorFriend = null
-        if (role === "impostor"){
-            impostorFriend = Object
-                .entries(game.roles)
-                .filter(([name,nameRole]) =>(
-                    (name !== req.user.username) &&
-                    nameRole === "impostor"
-                ))[0][0]
-        }
         return {status: 200, jsonResponse: {
             role, impostorFriend
-
         }}
     }
 }
 
+function setUpNewGame(game, user){
+    game.status = GAME_STATUS_GOING
+    const newOrder = shuffleArray(game.participants)
+    newOrder.slice(0,2).forEach(name => {
+        game.roles[name] = "impostor"
+        delete game.votes[name]
+    })
+    newOrder.slice(2).forEach(name => {
+        game.roles[name] = "true self"
+        game.votes[name] = []
+    })
+    const role = game.roles[user.username]
+    let impostorFriend = null
+    if (role === "impostor"){
+        impostorFriend = Object
+            .entries(game.roles)
+            .filter(([name,nameRole]) =>(
+                (name !== user.username) &&
+                nameRole === "impostor"
+            ))[0][0]
+    }
+    return {role, impostorFriend}
+}
+
 async function vote(req, user, game){
+    console.log(user)
+    console.log(game)
+    console.log(req.params.gameId)
     if (!user.games.includes(req.params.gameId)){
         return {
             status: 400,
@@ -356,7 +399,6 @@ async function vote(req, user, game){
             votes: null,
             roles: null,
             points: null,
-            nominates: null,
         }
         game.votes[user.username] = req.body.votes
         game.markModified("votes")
@@ -365,9 +407,9 @@ async function vote(req, user, game){
         if (numOfVotesCasted == game.participants.length - 2){
             // Everyone (except the 2 impostors) have voted, end the game
             game.status = GAME_STATUS_ENDED
-            const nominates = nominate2(game.votes)
-            const newPoints = assignPoints(game, nominates)
-            game.points = Object.keys(game.points)
+            // const nominates = nominate2(game.votes)
+            const newPoints = assignPoints(game)
+            Object.keys(game.points)
                 .forEach(name => {
                     game.points[name] += newPoints[name]
                 })
@@ -376,52 +418,81 @@ async function vote(req, user, game){
             jsonResponse.votes = game.votes
             jsonResponse.roles = game.roles
             jsonResponse.points = game.points
-            jsonResponse.nominates = nominates
         }
         await game.save()
         return {status: 200, jsonResponse}
     }
 }
 
-function nominate2(voter2votes){
-    const nominated2votes = {}
-    Object.values(voter2votes).forEach(votes =>{
-        votes.forEach(vote => {
-            if (!Object.keys(nominated2votes).includes(vote)){
-                nominated2votes[vote] = 1
-            } else{
-                nominated2votes[vote] += 1
-            }
+function assignPoints(game){
+    const points = {}
+    game.participants.forEach(name => {points[name] = 0})
+    const votesPerImpostor = {}
+    Object.entries(game.roles)
+        .filter(entry => entry[1] === "impostor")
+        .forEach(entry => {votesPerImpostor[entry[0]] = 0})
+    Object.entries(game.votes)
+        .forEach(([name,votes]) => {
+            votes.forEach(vote =>{
+                if (game.roles[vote] === "impostor"){
+                    votesPerImpostor[vote] += 1
+                    points[name] += 1
+                }
+            })
         })
-    })
-    let result = Object.entries(nominated2votes)
-        .sort((el1,el2) => (el2[1] - el1[1]))
-    if ((result.length > 2) && (result[1][1] == result[2][1])){
-        // If there is a tie btw 2nd and 3rd, only 1st gets nominates
-        result = result.slice(0,1)
-    } else{
-        // Else, both 1st and 2nd get nominated
-        result = result.slice(0,2)
-    }
-    return result.map(entry => entry[0]) // return the names
+    Object.entries(votesPerImpostor)
+        .forEach(([impostor, votes]) => {
+            if (votes == 0) {
+                // If nobody nominates the impostor, 3p
+                points[impostor] = 3
+            }
+            else if (votes < (game.participants.length - 2)) {
+                // If someone nominates the impostor, but not everyone does, 1p
+                points[impostor] = 1
+            } // Else 0p
+        })
+    return points
 }
 
-function assignPoints(game, nominates){
-    const newPoints = game.points
-    const pointsForTrues = nominates.reduce((points, nominate) =>(
-        game.roles[nominate] === "impostor"? points + 1 : points
-    ), 0)
-    console.log(nominates, game.roles, game.roles["111111"] === "impostor", pointsForTrues)
-    game.participants.forEach(participant => {
-        if (game.roles[participant] === "impostor"){
-            if (!nominates.includes(participant)){
-                newPoints[participant] += 2
+async function followUp(req, user, game){
+    if (!user.games.includes(req.params.gameId)){
+        return {
+            status: 400,
+            jsonResponse: {
+                errorMessage: "You are not a participant of this game"
             }
-        }else{
-            newPoints[participant] += pointsForTrues
         }
-    })
-    return newPoints
+    } else if (game.status !== GAME_STATUS_ENDED){
+        return {
+            status: 400,
+            jsonResponse: {
+                errorMessage: "The game has not finished yet"
+            }
+        }
+    }
+    game.followingUp[user.username] = true
+    let role = null
+    let impostorFriend = null
+    
+    const everyoneIsReady = Object
+        .values(game.followingUp)
+        .reduce((acc, current) => (acc && current),true)
+    if (everyoneIsReady){
+        // Restart game
+        game.participants.forEach(name =>{
+            game.followingUp[name] = false
+        })
+        const tmp = setUpNewGame(game, user)
+        role = tmp.role
+        impostorFriend = tmp.impostorFriend
+        game.markModified("roles")
+        game.markModified("votes")
+    }
+    game.markModified("followingUp")
+    await game.save()
+    return {status: 200, jsonResponse: {
+        role, impostorFriend
+    }}
 }
 
 router.post("/:gameId/messages", verifyToken, async (req,res)=>{
@@ -485,6 +556,5 @@ router.post("/:gameId/impostor-messages", verifyToken, async (req,res)=>{
         return res.status(200).json({msg})
     }            
 })
-
 
 module.exports = router

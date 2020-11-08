@@ -3,29 +3,23 @@ import { useEffect } from 'react'
 import { useState } from 'react'
 import { Button } from 'react-bootstrap'
 import { useDispatch, useSelector } from 'react-redux'
-import { startGameApi } from '../../../../../actions/gameActions'
+import { joinFollowUpApi, startGameApi } from '../../../../../actions/gameActions'
 
 export default function PostgameBar({activeGame}) {
 
     const [impostors, setImpostors] = useState([])
-    const [catchersList, setCatchersList] = useState([])
+    const [catchersList, setCatchersList] = useState([[],[]])
+    const [btnText, setBtnText] = useState("Join next game")
+    const [isBtnDisabled, setIsBtnDisabled] = useState(false)
 
     const {token, username} = useSelector(state => state.user)
     const socket = useSelector(state => state.socket)
     const dispatch = useDispatch()
 
-    const handleStart = async () =>{
-        const error = await dispatch(startGameApi(token, activeGame.gameId, socket, username))
-        if (error !== null){
-            console.log(error)
-        } else{
-            // setMultiInfoBar(<IngameBar/>)
-        }
-    }
-
     useEffect(() => {
-        const impostorNames = Object
-            .entries(activeGame.allRoles)
+        if (activeGame !== null){
+            const impostorNames = Object
+            .entries(activeGame.roles)
             .filter(entry => entry[1] === "impostor")
             .map(entry => entry[0])
         setImpostors(impostorNames)
@@ -41,36 +35,57 @@ export default function PostgameBar({activeGame}) {
                 })
                 .map(catchers => catchers.toString())
         )
+        }
+    }, [activeGame])
 
-    }, [])
-
+    const handleJoin = async () =>{
+        if (!isBtnDisabled){
+            dispatch(joinFollowUpApi(
+                activeGame._id, username, token, socket
+            ))
+            setBtnText("Waiting for the others to join")
+            setIsBtnDisabled(true)
+        }
+    }
+    
     return (
 <div className="multi-info-bar end">
     <div className="game-summary">
         <div className="roles-info">
-            <p>The impostors were</p>
-            <p><span>{impostors[0]}</span>and<span>{impostors[1]}</span></p>
+            <div className="impostors-text">
+                <p>The impostors were</p>
+                <p><span>{impostors[0]}</span>and<span>{impostors[1]}</span></p>
+            </div>
             <div className="catchers">
                 <p>Who caught <span>{impostors[0]}</span>?</p>
-                <p>{catchersList[0]}</p>
+                {
+                    catchersList[0].length > 0
+                    ? <p>{catchersList[0]}</p>
+                    : (<p>Nobody, well done!</p>)
+                }
             </div>
             <div className="catchers">
                 <p>Who caught <span>{impostors[1]}</span>?</p>
-                <p>{catchersList[1]}</p>
+                {
+                    catchersList[1].length > 0
+                    ? <p>{catchersList[1]}</p>
+                    : (<p>Nobody!</p>)
+                }
             </div>
         </div>
         <div className="points-info">
             {Object.entries(activeGame.points)
                 .map(([name,points]) => (
-                    <p>{name}: {points}p</p>
+                    <p>{name}: <span className="point">{points}p</span></p>
                 ))}
         </div>
     </div>
 
     <Button
         variant="success"
-        onClick={handleStart}
-    >Start a new game</Button>
+        onClick={handleJoin}
+        disabled={isBtnDisabled}
+    >{btnText}</Button>
 </div>
     )
 }

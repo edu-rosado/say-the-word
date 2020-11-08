@@ -6,10 +6,43 @@ import { useSelector } from 'react-redux'
 import VotingModal from '../VotingModal'
 
 export default function IngameBar({activeGame, setMultiInfoBar}) {
-    const {participants, _id, host, role, impostorFriend} = activeGame
+    const {participants, _id, host, roles, impostorFriend} = activeGame
 
+    const [role, setRole] = useState(null)
     const [modalIsOpen, setmodalIsOpen] = useState(false)
+    const [isBtnDisabled, setIsBtnDisabled] = useState(true)
+    const [btnText, setBtnText] = useState("Vote")
 
+    const username = useSelector(state => state.user.username)
+
+    useEffect(() => {
+        if ((roles !== undefined) && 
+            (username !== undefined)){
+            setRole(roles[username])
+        }
+    }, [roles, username])
+    
+    useEffect(() => {
+        console.log(role)
+        if ((role !== null) && 
+            (role !== "impostor")){
+            setIsBtnDisabled(activeGame.votes[username].length != 0)
+        }
+    }, [username, role])
+
+    useEffect(() => {
+        if (isBtnDisabled) {setBtnText("Waiting for others to vote")}
+        else{setBtnText("Vote")}
+    }, [isBtnDisabled])
+
+    const handleVote = () => {
+        if (!isBtnDisabled){
+            setmodalIsOpen(true)
+            setIsBtnDisabled(true)
+        }
+        
+    }
+    
     return (
 <div className="multi-info-bar with-action">
     { role === "impostor" ? (<> {/* if ... */}
@@ -22,7 +55,10 @@ export default function IngameBar({activeGame, setMultiInfoBar}) {
     </>) : (<> {/* Else... */}
         <p>You are an your true self</p>
         <p>Find both impostors!</p>
-        <Button onClick={()=>setmodalIsOpen(true)}>Vote</Button>
+        <Button
+            onClick={handleVote}
+            disabled={isBtnDisabled}
+        >{btnText}</Button>
         <VotingModal
             modalIsOpen={modalIsOpen}
             setmodalIsOpen={setmodalIsOpen}

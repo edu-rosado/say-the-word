@@ -14,6 +14,7 @@ const gameSchema = new mongoose.Schema({
     roles: mongoose.Schema.Types.Mixed,
     votes: mongoose.Schema.Types.Mixed,
     points: mongoose.Schema.Types.Mixed,
+    followingUp: mongoose.Schema.Types.Mixed,
     host: String,
     status: String,
 })
